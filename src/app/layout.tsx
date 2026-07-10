@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { plusJakartaSans } from "@/lib/fonts";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -32,6 +33,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
