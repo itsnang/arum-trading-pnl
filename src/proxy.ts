@@ -1,38 +1,34 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { ACCESS_TOKEN_COOKIE, USER_COOKIE } from '@/features/auth/cookies'
+import { getSessionCookie } from 'better-auth/cookies'
 
-// Unauthenticated (auth) route group — never gated.
-const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password']
+const PUBLIC_API_PATHS = ['/api/auth']
+const AUTH_PATHS = ['/login', '/register']
 
+function matchesPath(pathname: string, paths: string[]): boolean {
+  return paths.some((path) => pathname === path || pathname.startsWith(`${path}/`))
+}
+
+// Cookie presence only (no DB round trip) — requireSession() re-verifies the real session server-side.
 function isAuthenticated(request: NextRequest): boolean {
-  const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value
-  if (!accessToken) return false
-
-  const rawUser = request.cookies.get(USER_COOKIE)?.value
-  if (!rawUser) return false
-  try {
-    JSON.parse(rawUser)
-    return true
-  } catch {
-    return false
-  }
+  return !!getSessionCookie(request)
 }
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const isAuthPath = AUTH_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))
-  const authed = isAuthenticated(request)
 
-  // Keep signed-in users out of the auth pages.
-  if (isAuthPath) {
-    if (authed) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
+  if (matchesPath(pathname, PUBLIC_API_PATHS)) {
     return NextResponse.next()
   }
 
-  // Everything else is protected.
+  const authed = isAuthenticated(request)
+
+  if (matchesPath(pathname, AUTH_PATHS)) {
+    return authed
+      ? NextResponse.redirect(new URL('/', request.url))
+      : NextResponse.next()
+  }
+
   if (!authed) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
@@ -41,6 +37,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Run on all routes except Next internals, static assets, and metadata files.
   matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'],
 }

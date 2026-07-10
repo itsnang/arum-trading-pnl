@@ -49,11 +49,11 @@ src/features/<domain>/
 
 | Slice | Responsibility |
 |-------|---------------|
-| `auth` | Session management — login, register, forgot/reset password, cookie-based sessions, token refresh |
+| `auth` | Session management (Postgres-based) — login, register, sign out, and the protected home page, on better-auth. See "Auth conventions" below |
 
 **Adding a new slice:**
 1. Create `src/features/<new-slice>/` with the subset of `actions/`, `components/`, `hooks/`, `schemas/`, `store/`, `types.ts`, `utils/` your slice needs
-2. Wire up a route under `src/app/` (a new route group, or a page inside `(app)`) that imports from the slice's `components/`
+2. Wire up a route under `src/app/` that imports from the slice's `components/`
 3. Keep all business logic in the slice — pages under `src/app/` should stay thin compositions
 4. Follow the "Rules enforced by reviewers" below
 
@@ -76,17 +76,27 @@ src/features/<domain>/
 - Component files use **kebab-case** (`login-screen.tsx`), matching `src/components/ui/`; the exported component keeps **PascalCase** (`LoginScreen`). See "File naming" below
 - **Every form must use React Hook Form + Zod.** Define a `z.object()` schema in `schemas/<form>.schema.ts` (or `types.ts` for a small slice like `auth`), export the inferred type (`z.infer<typeof schema>`), and wire it up with `useForm({ resolver: zodResolver(schema), defaultValues: { ... } })`. Use `register` for native inputs, `Controller` for custom inputs (`Toggle`, `ColorInput`, `SelectInput`). After a successful mutation, call `form.reset(data)` to clear `isDirty`. Avoid `z.coerce` and `.default()` — they split input/output types and break `exactOptionalPropertyTypes`; handle defaults in `defaultValues` instead and parse numbers explicitly in `onSubmit`. Field errors go in `Field`'s `error` prop (`error={errors.fieldName?.message}`).
 
+### Auth conventions
+
+`auth` is backed by Postgres direct via Drizzle ORM + better-auth (`src/lib/db/` + `src/lib/better-auth/`). One deliberate exception to the rules above:
+
+- **`auth` has no `actions/` folder.** Login/register call better-auth's client (`signIn.email`/`signUp.email` from `src/lib/better-auth/client.ts`) directly from a Client Component rather than going through a custom `'use server'` wrapper — better-auth's `nextCookies()` plugin owns persisting the session cookie itself, so a hand-written server action would just be a redundant transport layer over better-auth's own idiomatic Next.js integration.
+
+There's no `withAuthAction`-style middleware in this starter — server components and actions call `requireSession()`/`getSession()` (`src/lib/better-auth/session.ts`) directly, matching better-auth's own documented Next.js patterns. Add your own wrapper only once you have a second protected action that would actually reuse it.
+
 ### Route groups
 
-`src/app/` uses parenthesised route groups (URL-invisible):
-- `(auth)` → `/login`, `/register`, `/forgot-password`, `/reset-password` — unauthenticated flows
-- `(app)` → `/dashboard` — authenticated area (add your own protected pages here)
+`src/app/` uses a parenthesised route group (URL-invisible):
+- `(auth)` → `/login`, `/register` — unauthenticated
+- protected: everything else, primarily `/` (root `page.tsx`, no route group) — shows the signed-in user
 
-Route protection is handled centrally in `src/proxy.ts` (Next.js 16's middleware-equivalent): it reads the session cookies, redirects unauthenticated visitors to `/login`, and redirects signed-in visitors away from the auth pages to `/dashboard`.
+Route protection is handled centrally in `src/proxy.ts` (Next.js 16's middleware-equivalent): a better-auth cookie-presence check via `getSessionCookie()` redirects unauthenticated visitors to `/login` and signed-in visitors away from `(auth)` to `/`. This check is optimistic (cookie presence only, no signature/DB verification) — `src/app/page.tsx` re-verifies the real session server-side via `requireSession()` as defense-in-depth.
 
 ### Environment variables
 
 `src/env.ts` — server-only (imports `server-only`), Zod-validated. Import this in Server Components and actions; add new server vars as commented-out lines here.
+
+`DATABASE_URL` and `BETTER_AUTH_SECRET` (min 32 chars) are **required** — `src/env.ts` throws at process start if either is missing or invalid, matching the base starter's assumption that Postgres/better-auth is always configured. `BETTER_AUTH_URL` is defaulted. Point `DATABASE_URL` at any reachable Postgres (a local install or a free hosted instance — Neon, Supabase, Railway, etc.).
 
 **Never import `src/env.ts` from a Client Component** — the `server-only` import makes that a build error. If a Client Component needs a `NEXT_PUBLIC_*` var, add a sibling `src/env.client.ts` (no `server-only` guard, Zod schema scoped to `NEXT_PUBLIC_*` vars only) rather than relaxing `env.ts`'s guard.
 

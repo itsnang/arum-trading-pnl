@@ -3,9 +3,9 @@ import { z } from 'zod'
 
 const serverSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
-  API_BASE_URL: z.string().url().default('http://localhost:8090'),
-  // DATABASE_URL: z.string().url(),
-  // AUTH_SECRET: z.string().min(1),
+  DATABASE_URL: z.string().url(),
+  BETTER_AUTH_SECRET: z.string().min(32),
+  BETTER_AUTH_URL: z.string().url().default('http://localhost:3000'),
 })
 
 const serverEnv = serverSchema.safeParse(process.env)

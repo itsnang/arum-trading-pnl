@@ -3,7 +3,7 @@ import { RegisterScreen } from '@/features/auth/components/register-screen'
 
 export const metadata: Metadata = {
   title: 'Create account',
-  description: 'Create your account.',
+  description: 'Create an account.',
 }
 
 export default function RegisterPage() {
