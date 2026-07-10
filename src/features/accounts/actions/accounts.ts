@@ -5,12 +5,10 @@ import { and, desc, eq, getTableColumns, sql } from 'drizzle-orm'
 import { db } from '@/lib/db/client'
 import { tradingAccount } from '@/lib/db/schema/trading-account.table'
 import { trade } from '@/lib/db/schema/trade.table'
-import { requireSession } from '@/lib/better-auth/session'
+import { withAuthAction } from '@/lib/better-auth/middleware'
 import type { AddAccountInput } from '../schemas'
 
-export async function getAccountsWithStats() {
-  const { user } = await requireSession()
-
+export const getAccountsWithStats = withAuthAction(async ({ user }) => {
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
   const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().slice(0, 10)
@@ -41,37 +39,37 @@ export async function getAccountsWithStats() {
       isActive: parseInt(row.recentCount) > 0,
     }
   })
-}
+})
 
-export async function addAccount(input: AddAccountInput): Promise<{ error?: string }> {
-  const { user } = await requireSession()
+export const addAccount = withAuthAction(
+  async ({ user }, input: AddAccountInput): Promise<{ error?: string }> => {
+    try {
+      await db.insert(tradingAccount).values({
+        id: crypto.randomUUID(),
+        userId: user.id,
+        name: input.name,
+        broker: input.broker ?? null,
+        type: input.type,
+        startingBalance: input.startingBalance,
+      })
+      revalidatePath('/accounts')
+      return {}
+    } catch {
+      return { error: 'Failed to create account' }
+    }
+  },
+)
 
-  try {
-    await db.insert(tradingAccount).values({
-      id: crypto.randomUUID(),
-      userId: user.id,
-      name: input.name,
-      broker: input.broker ?? null,
-      type: input.type,
-      startingBalance: input.startingBalance,
-    })
-    revalidatePath('/accounts')
-    return {}
-  } catch {
-    return { error: 'Failed to create account' }
-  }
-}
-
-export async function deleteAccount(accountId: string): Promise<{ error?: string }> {
-  const { user } = await requireSession()
-
-  try {
-    await db
-      .delete(tradingAccount)
-      .where(and(eq(tradingAccount.id, accountId), eq(tradingAccount.userId, user.id)))
-    revalidatePath('/accounts')
-    return {}
-  } catch {
-    return { error: 'Failed to delete account' }
-  }
-}
+export const deleteAccount = withAuthAction(
+  async ({ user }, accountId: string): Promise<{ error?: string }> => {
+    try {
+      await db
+        .delete(tradingAccount)
+        .where(and(eq(tradingAccount.id, accountId), eq(tradingAccount.userId, user.id)))
+      revalidatePath('/accounts')
+      return {}
+    } catch {
+      return { error: 'Failed to delete account' }
+    }
+  },
+)

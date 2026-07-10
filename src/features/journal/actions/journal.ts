@@ -3,15 +3,14 @@
 import { and, eq, gte, lte, sql } from 'drizzle-orm'
 import { db } from '@/lib/db/client'
 import { trade } from '@/lib/db/schema/trade.table'
-import { requireSession } from '@/lib/better-auth/session'
+import { withAuthAction } from '@/lib/better-auth/middleware'
 import type { MonthJournalData } from '../types'
 
-export async function getMonthJournal(
+export const getMonthJournal = withAuthAction(async (
+  { user },
   accountId: string,
   month: string,
-): Promise<MonthJournalData> {
-  const { user } = await requireSession()
-
+): Promise<MonthJournalData> => {
   const [yearStr, monStr] = month.split('-')
   const year = Number(yearStr)
   const mon = Number(monStr)
@@ -53,4 +52,4 @@ export async function getMonthJournal(
   const winRate = tradeCount > 0 ? Math.round((winCount / tradeCount) * 100) : 0
 
   return { month, accountId, days, netPnl, winCount, lossCount, tradeCount, winRate }
-}
+})
