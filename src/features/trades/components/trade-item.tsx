@@ -55,7 +55,7 @@ export function TradeItem({ trade: t, onDelete, isDeleting }: TradeItemProps) {
         type="button"
         disabled={isDeleting}
         onClick={() => onDelete(t.id)}
-        className="shrink-0 rounded-full p-1 text-muted-foreground hover:bg-hair disabled:opacity-40"
+        className="shrink-0 rounded-full p-1 text-muted-foreground transition-transform hover:bg-hair active:scale-90 disabled:opacity-40"
       >
         <X size={14} />
       </button>

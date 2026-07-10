@@ -51,6 +51,13 @@ export function CalcForm({ accountId, date, onSuccess }: CalcFormProps) {
       return
     }
     await invalidateTradeQueries(queryClient, accountId, date)
+    const rawPnl = calcPnl(
+      values.direction,
+      parseFloat(values.entryPrice),
+      parseFloat(values.exitPrice),
+      parseFloat(values.lotSize),
+    )
+    toast.success(`Trade logged · ${formatPnl(rawPnl, { showPlus: true })}`)
     reset({ accountId, date, direction: 'buy', entryPrice: '', exitPrice: '', lotSize: '' })
     onSuccess?.()
   }
@@ -65,7 +72,7 @@ export function CalcForm({ accountId, date, onSuccess }: CalcFormProps) {
             type="button"
             onClick={() => setValue('direction', d)}
             className={cn(
-              'flex-1 rounded-xl border py-2 text-sm font-semibold uppercase transition-colors',
+              'flex-1 rounded-xl border py-2 text-sm font-semibold uppercase transition active:scale-[0.98]',
               direction === d
                 ? d === 'buy'
                   ? 'border-green bg-green/10 text-green'
@@ -111,7 +118,7 @@ export function CalcForm({ accountId, date, onSuccess }: CalcFormProps) {
         {previewPnl === null ? 'P&L —' : formatPnl(previewPnl, { showPlus: true })}
       </div>
 
-      <Button type="submit" disabled={isSubmitting} className="w-full">
+      <Button type="submit" disabled={isSubmitting} className="w-full active:scale-[0.98]">
         {isSubmitting ? 'Saving…' : 'Add trade'}
       </Button>
     </form>

@@ -25,6 +25,7 @@ export function TradeList({ trades, accountId, date }: TradeListProps) {
       toast.error(result.error)
     } else {
       await invalidateTradeQueries(queryClient, accountId, date)
+      toast.success('Trade deleted')
     }
     setDeletingId(null)
   }

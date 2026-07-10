@@ -53,7 +53,7 @@ export function AccountsScreen() {
           <button
             type="button"
             onClick={() => setAddOpen(true)}
-            className="flex items-center gap-1 rounded-xl bg-clay px-3 py-2 text-xs font-semibold text-white"
+            className="flex items-center gap-1 rounded-xl bg-clay px-3 py-2 text-xs font-semibold text-white transition-transform active:scale-[0.98]"
           >
             <Plus size={14} />
             Add

@@ -69,7 +69,7 @@ export function DayDialog({ open, onClose, date, accountId }: DayDialogProps) {
               type="button"
               onClick={() => setMode(value)}
               className={cn(
-                'flex-1 rounded-lg py-1.5 text-sm font-medium transition-colors',
+                'flex-1 rounded-lg py-1.5 text-sm font-medium transition active:scale-[0.98]',
                 mode === value
                   ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground',

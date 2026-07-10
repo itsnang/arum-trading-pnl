@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { formatPnl } from '@/lib/format'
 import { quickTradeSchema, type QuickTradeInput } from '../schemas/quick-trade.schema'
 import { addQuickTrade } from '../actions'
 import { invalidateTradeQueries } from '../utils'
@@ -40,6 +41,8 @@ export function QuickPnlForm({ accountId, date, onSuccess }: QuickPnlFormProps) 
       return
     }
     await invalidateTradeQueries(queryClient, accountId, date)
+    const signedPnl = values.result === 'win' ? parseFloat(values.pnl) : -parseFloat(values.pnl)
+    toast.success(`Trade logged · ${formatPnl(signedPnl, { showPlus: true })}`)
     reset({ accountId, date, result: 'win', pnl: '' })
     onSuccess?.()
   }
@@ -54,7 +57,7 @@ export function QuickPnlForm({ accountId, date, onSuccess }: QuickPnlFormProps) 
             type="button"
             onClick={() => setValue('result', r)}
             className={cn(
-              'flex-1 rounded-xl border py-2 text-sm font-semibold capitalize transition-colors',
+              'flex-1 rounded-xl border py-2 text-sm font-semibold capitalize transition active:scale-[0.98]',
               result === r
                 ? r === 'win'
                   ? 'border-green bg-green/10 text-green'
@@ -85,7 +88,7 @@ export function QuickPnlForm({ accountId, date, onSuccess }: QuickPnlFormProps) 
         type="submit"
         disabled={isSubmitting}
         className={cn(
-          'w-full',
+          'w-full active:scale-[0.98]',
           result === 'win'
             ? 'bg-green hover:bg-green/90'
             : 'bg-red hover:bg-red/90',
