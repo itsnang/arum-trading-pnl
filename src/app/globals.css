@@ -4,49 +4,74 @@
 
 @layer base {
   :root {
-    /* White palette — pure white paper, true black ink, cobalt clay accent */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-    --primary: 0 0% 0%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 94.1%;
-    --secondary-foreground: 0 0% 0%;
-    --muted: 0 0% 94.1%;
-    --muted-foreground: 0 0% 50.2%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 87.8%;
-    --input: 0 0% 87.8%;
-    --ring: 211 100% 40%;
+    /* Aurum warm palette — paper/clay/ink */
+    --background: hsl(40 33% 96%);       /* #FAF8F3 paper */
+    --foreground: hsl(44 10% 7%);        /* #15140F ink */
+    --card: hsl(0 0% 100%);              /* #FFFFFF surface */
+    --card-foreground: hsl(44 10% 7%);
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(44 10% 7%);
+    --primary: hsl(17 54% 49%);          /* #C25E3A clay */
+    --primary-foreground: hsl(0 0% 100%);
+    --secondary: hsl(38 30% 92%);        /* #F1EDE3 hair */
+    --secondary-foreground: hsl(44 10% 7%);
+    --muted: hsl(38 30% 92%);
+    --muted-foreground: hsl(35 12% 45%);
+    --accent: hsl(38 26% 88%);           /* #E6E1D6 line */
+    --accent-foreground: hsl(44 10% 7%);
+    --destructive: hsl(3 54% 50%);       /* #C2483F red */
+    --destructive-foreground: hsl(0 0% 100%);
+    --border: hsl(35 22% 87%);           /* #E6E1D6 line */
+    --input: hsl(35 22% 87%);
+    --ring: hsl(17 54% 49%);
     --radius: 0.5rem;
+    /* Aurum semantic tokens */
+    --clay: hsl(17 54% 49%);             /* #C25E3A */
+    --green: hsl(148 41% 40%);           /* #3B8E5F */
+    --red: hsl(3 54% 50%);               /* #C2483F */
+    --line: hsl(35 22% 87%);             /* #E6E1D6 */
+    --hair: hsl(38 30% 92%);             /* #F1EDE3 */
+    --faint: hsl(35 17% 72%);            /* #B7B0A1 */
+    /* Fixed "spotlight" hero card — stays dark in both themes, unlike background/foreground */
+    --hero-bg: hsl(44 10% 7%);           /* #15140F */
+    --hero-fg: hsl(40 33% 96%);          /* #FAF8F3 */
+    --pos-hero: hsl(142 39% 64%);        /* #7FC79A */
+    --neg-hero: hsl(5 65% 71%);          /* #E58E86 */
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --background: hsl(44 10% 7%);        /* #15140F */
+    --foreground: hsl(40 33% 96%);       /* #FAF8F3 */
+    --card: hsl(44 9% 12%);
+    --card-foreground: hsl(40 33% 96%);
+    --popover: hsl(44 9% 12%);
+    --popover-foreground: hsl(40 33% 96%);
+    --primary: hsl(18 65% 55%);
+    --primary-foreground: hsl(0 0% 100%);
+    --secondary: hsl(44 9% 16%);
+    --secondary-foreground: hsl(40 33% 96%);
+    --muted: hsl(44 9% 16%);
+    --muted-foreground: hsl(38 15% 55%);
+    --accent: hsl(44 9% 18%);
+    --accent-foreground: hsl(40 33% 96%);
+    --destructive: hsl(4 62% 61%);
+    --destructive-foreground: hsl(0 0% 100%);
+    --border: hsl(44 9% 18%);
+    --input: hsl(44 9% 18%);
+    --ring: hsl(18 65% 55%);
+    --radius: 0.5rem;
+    /* Brightened for legibility on dark surfaces */
+    --clay: hsl(18 65% 55%);             /* #D06B45 */
+    --green: hsl(140 39% 52%);           /* #5BAE7C */
+    --red: hsl(4 62% 61%);               /* #D9645A */
+    --line: hsl(44 9% 18%);
+    --hair: hsl(44 9% 14%);
+    --faint: hsl(30 8% 40%);             /* #6E685C */
+    /* Even darker than dark-mode surfaces so the hero card still reads as a "spotlight" */
+    --hero-bg: hsl(40 14% 4%);           /* #0C0B09 */
+    --hero-fg: hsl(45 21% 92%);          /* #F0EEE8 */
+    --pos-hero: hsl(142 39% 64%);        /* #7FC79A */
+    --neg-hero: hsl(5 65% 71%);          /* #E58E86 */
   }
 
   * {
@@ -64,25 +89,35 @@
 }
 
 @theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-clay: var(--clay);
+  --color-green: var(--green);
+  --color-red: var(--red);
+  --color-line: var(--line);
+  --color-hair: var(--hair);
+  --color-faint: var(--faint);
+  --color-hero-bg: var(--hero-bg);
+  --color-hero-fg: var(--hero-fg);
+  --color-pos-hero: var(--pos-hero);
+  --color-neg-hero: var(--neg-hero);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -90,12 +125,21 @@
   --font-sans: var(--font-plus-jakarta-sans), system-ui, sans-serif;
 }
 
+@layer utilities {
+  .app-container {
+    @apply mx-auto w-full max-w-[430px];
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
 /* NProgress bar — themed to match app design */
 #nprogress .bar {
-  background: hsl(var(--primary)) !important;
+  background: var(--primary) !important;
   height: 2px !important;
   z-index: 9999 !important;
 }
 #nprogress .peg {
-  box-shadow: 0 0 8px hsl(var(--primary)), 0 0 4px hsl(var(--primary)) !important;
+  box-shadow: 0 0 8px var(--primary), 0 0 4px var(--primary) !important;
 }

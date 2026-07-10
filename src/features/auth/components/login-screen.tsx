@@ -32,13 +32,16 @@ export function LoginScreen() {
   }
 
   return (
-    <div className="h-svh flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm rounded-3xl bg-card px-7 py-8 shadow-lg">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4">
+      <div className="w-15.5 h-15.5 rounded-lg bg-clay flex items-center justify-center mb-5 shadow-lg shadow-clay/30">
+        <span className="text-2xl font-extrabold text-white tracking-tight">Au</span>
+      </div>
+      <div className="w-full max-w-sm rounded-xl bg-card px-7 py-8 shadow-lg">
         <h1 className="text-[28px] leading-tight mb-1 text-foreground">
           Welcome back
         </h1>
         <p className="text-sm mb-7 text-muted-foreground">
-          Sign in to your account
+          Sign in to your gold trading journal.
         </p>
 
         <Form {...form}>
@@ -75,7 +78,7 @@ export function LoginScreen() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-12 rounded-2xl text-sm font-semibold tracking-wide transition-opacity hover:opacity-90 disabled:opacity-60 mt-2 flex items-center justify-center gap-2 bg-primary text-primary-foreground"
+              className="w-full h-12 rounded-lg text-sm font-semibold tracking-wide transition-opacity hover:opacity-90 disabled:opacity-60 mt-2 flex items-center justify-center gap-2 bg-primary text-primary-foreground"
             >
               {isSubmitting && <Loader2 size={15} className="animate-spin" />}
               Sign in

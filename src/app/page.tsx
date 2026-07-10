@@ -1,8 +1,5 @@
-import { requireSession } from '@/lib/better-auth/session'
-import { HomeScreen } from '@/features/auth/components/home-screen'
+import { redirect } from 'next/navigation'
 
-export default async function Home() {
-  const { user } = await requireSession()
-
-  return <HomeScreen name={user.name} />
+export default function Home() {
+  redirect('/journal')
 }

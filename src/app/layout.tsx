@@ -4,8 +4,8 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Next.js Vertical Slice Starter",
-  description: "A Next.js starter demonstrating vertical-slice architecture",
+  title: 'Aurum — Gold Trading Journal',
+  description: 'Track your XAU/USD trades and P&L',
 };
 
 export default function RootLayout({
@@ -17,7 +17,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${plusJakartaSans.variable} min-h-svh antialiased`}
+      className={`${plusJakartaSans.variable} min-h-screen antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
