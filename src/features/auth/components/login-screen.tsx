@@ -11,6 +11,7 @@ import { loginSchema, type LoginInput } from '../schemas'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordField } from '@/components/shared/password-field'
+import { AppLogo } from '@/components/shared/app-logo'
 
 export function LoginScreen() {
   const router = useRouter()
@@ -33,9 +34,7 @@ export function LoginScreen() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="w-15.5 h-15.5 rounded-lg bg-clay flex items-center justify-center mb-5 shadow-lg shadow-clay/30">
-        <span className="text-2xl font-extrabold text-white tracking-tight">Au</span>
-      </div>
+      <AppLogo className="w-15.5 h-15.5 mb-5 shadow-lg shadow-clay/30" />
       <div className="w-full max-w-sm rounded-xl bg-card px-7 py-8 shadow-lg">
         <h1 className="text-[28px] leading-tight mb-1 text-foreground">
           Welcome back

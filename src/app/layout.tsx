@@ -4,7 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: 'Aurum — Gold Trading Journal',
+  title: 'Pipfolio — Gold Trading Journal',
   description: 'Track your XAU/USD trades and P&L',
 };
 

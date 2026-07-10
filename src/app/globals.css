@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Aurum warm palette — paper/clay/ink */
+    /* Pipfolio warm palette — paper/clay/ink */
     --background: hsl(40 33% 96%);       /* #FAF8F3 paper */
     --foreground: hsl(44 10% 7%);        /* #15140F ink */
     --card: hsl(0 0% 100%);              /* #FFFFFF surface */
@@ -25,7 +25,7 @@
     --input: hsl(35 22% 87%);
     --ring: hsl(17 54% 49%);
     --radius: 0.5rem;
-    /* Aurum semantic tokens */
+    /* Pipfolio semantic tokens */
     --clay: hsl(17 54% 49%);             /* #C25E3A */
     --green: hsl(148 41% 40%);           /* #3B8E5F */
     --red: hsl(3 54% 50%);               /* #C2483F */

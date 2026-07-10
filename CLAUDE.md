@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**Aurum** is a mobile-first XAU/USD trading journal app. Traders log P&L per day, view a monthly calendar of daily results, track multiple accounts (personal/funded/demo), and see win rate and net P&L stats. The visual design reference is the bundled prototype at `~/Downloads/Gold Weekly Profit and Loss.html` — warm paper/clay color palette (`#15140F` dark background, `#C25E3A` clay accent, `#FAF8F3` light), dark mode, Plus Jakarta Sans font.
+**Pipfolio** is a mobile-first XAU/USD trading journal app. Traders log P&L per day, view a monthly calendar of daily results, track multiple accounts (personal/funded/demo), and see win rate and net P&L stats. The visual design reference is the bundled prototype at `~/Downloads/Gold Weekly Profit and Loss.html` — warm paper/clay color palette (`#15140F` dark background, `#C25E3A` clay accent, `#FAF8F3` light), dark mode, Plus Jakarta Sans font.
 
 ## ⚠️ Important: Read Next.js docs before writing code
 
@@ -105,14 +105,14 @@ Route protection is in `src/proxy.ts` (Next.js 16 middleware equivalent): optimi
 
 ### Design system
 
-Colors must match the Aurum prototype. Update `src/app/globals.css` (the only Tailwind config — no `tailwind.config.ts`):
+Colors must match the Pipfolio prototype. Update `src/app/globals.css` (the only Tailwind config — no `tailwind.config.ts`):
 - Dark background: `#15140F` (near-black warm brown)
 - Clay accent: `#C25E3A` (burnt orange/terracotta)
 - Light surface: `#FAF8F3` (warm off-white paper)
 - Font: Plus Jakarta Sans (already configured via `--font-plus-jakarta-sans` in `globals.css`)
 - Class-based dark mode via `@custom-variant dark (&:where(.dark, .dark *))` — toggle `.dark` on `<html>`
 
-The current `globals.css` has a generic white/neutral palette — swap in the Aurum warm palette when building any trading journal UI.
+The current `globals.css` has a generic white/neutral palette — swap in the Pipfolio warm palette when building any trading journal UI.
 
 ### TanStack Query v5
 
