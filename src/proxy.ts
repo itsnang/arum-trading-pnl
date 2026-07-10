@@ -25,7 +25,7 @@ export function proxy(request: NextRequest) {
 
   if (matchesPath(pathname, AUTH_PATHS)) {
     return authed
-      ? NextResponse.redirect(new URL('/', request.url))
+      ? NextResponse.redirect(new URL('/journal', request.url))
       : NextResponse.next()
   }
 

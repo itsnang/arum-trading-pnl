@@ -1,0 +1,8 @@
+import type { ReactNode } from 'react'
+import { requireSession } from '@/lib/better-auth/session'
+import { AppShell } from '@/components/shared/app-shell'
+
+export default async function AppLayout({ children }: { children: ReactNode }) {
+  await requireSession()
+  return <AppShell>{children}</AppShell>
+}

@@ -10,3 +10,12 @@ export function formatDate(iso: string, month: 'short' | 'long' = 'short'): stri
     year: 'numeric',
   })
 }
+
+/** "Friday, Jul 10" — weekday + short month/day, no year, for day-detail headers. */
+export function formatDateWithWeekday(iso: string): string {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+  })
+}

@@ -1,0 +1,90 @@
+'use client'
+
+import Link from 'next/link'
+import { ChevronRight } from 'lucide-react'
+import { shiftMonth, formatMonthLabel } from '@/lib/format'
+import { ThemeToggle } from '@/components/shared/theme-toggle'
+import { useMonthJournal } from '../hooks/use-month-journal'
+import { MonthNav } from './month-nav'
+import { MonthHero } from './month-hero'
+import { MonthCalendar } from './month-calendar'
+import type { AccountWithStatsLike } from '../types'
+
+interface JournalScreenProps {
+  accountId: string | null
+  month: string
+  selectedDate: string | null
+  onMonthChange: (month: string) => void
+  onDayPress: (date: string) => void
+  accounts: AccountWithStatsLike[]
+}
+
+export function JournalScreen({
+  accountId,
+  month,
+  selectedDate,
+  onMonthChange,
+  onDayPress,
+  accounts,
+}: JournalScreenProps) {
+  const effectiveAccountId = accountId ?? ''
+
+  const { data } = useMonthJournal(effectiveAccountId, month)
+
+  const emptyData = {
+    month,
+    accountId: effectiveAccountId,
+    days: [],
+    netPnl: 0,
+    winCount: 0,
+    lossCount: 0,
+    tradeCount: 0,
+    winRate: 0,
+  }
+
+  const journalData = data ?? emptyData
+  const activeAccount = accounts.find((acc) => acc.id === effectiveAccountId)
+
+  return (
+    <div className="flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-2 px-5 pt-12 pb-2">
+        <div>
+          <h1 className="text-xl font-extrabold">Journal</h1>
+          <p className="text-xs text-muted-foreground">XAU/USD · {formatMonthLabel(month)}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          {activeAccount && (
+            <Link
+              href="/accounts"
+              className="flex items-center gap-1.5 rounded-full border border-line bg-card px-3 py-2 text-xs font-semibold"
+            >
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-clay" />
+              <span className="max-w-24 truncate">{activeAccount.name}</span>
+              <ChevronRight size={13} className="text-muted-foreground" />
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Month navigation */}
+      <MonthNav
+        month={month}
+        onPrev={() => onMonthChange(shiftMonth(month, -1))}
+        onNext={() => onMonthChange(shiftMonth(month, 1))}
+      />
+
+      {/* Hero */}
+      <MonthHero data={journalData} />
+
+      {/* Calendar */}
+      <MonthCalendar
+        month={month}
+        days={journalData.days}
+        selectedDate={selectedDate}
+        onDayPress={onDayPress}
+      />
+    </div>
+  )
+}
