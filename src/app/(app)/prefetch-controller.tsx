@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { toMonthKey } from '@/lib/format'
 import { useSelectedAccountStore } from '@/features/accounts/store/accounts.store'
-import { monthJournalQueryOptions } from '@/features/journal/hooks/use-month-journal'
+import { monthJournalQueryOptions } from '@/features/journal/utils'
 
 /**
  * Prefetches the selected account's current-month journal in the background

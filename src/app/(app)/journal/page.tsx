@@ -3,7 +3,7 @@ import { makeQueryClient } from '@/lib/query-client'
 import { queryKeys } from '@/lib/query-keys'
 import { toMonthKey } from '@/lib/format'
 import { getAccountsWithStats } from '@/features/accounts/actions/accounts'
-import { monthJournalQueryOptions } from '@/features/journal/hooks/use-month-journal'
+import { monthJournalQueryOptions } from '@/features/journal/utils'
 import { JournalView } from './journal-view'
 
 export default async function JournalPage() {
