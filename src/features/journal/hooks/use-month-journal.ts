@@ -1,13 +1,12 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import { queryKeys } from '@/lib/query-keys'
-import { getMonthJournal } from '../actions'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { monthJournalQueryOptions } from '../utils'
 
 export function useMonthJournal(accountId: string, month: string) {
   return useQuery({
-    queryKey: queryKeys.monthJournal(accountId, month),
-    queryFn: () => getMonthJournal(accountId, month),
+    ...monthJournalQueryOptions(accountId, month),
     enabled: !!accountId && !!month,
+    placeholderData: keepPreviousData,
   })
 }
