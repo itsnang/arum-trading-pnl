@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { formatPnl } from '@/lib/format'
+import { queryKeys } from '@/lib/query-keys'
 import { quickTradeSchema, type QuickTradeInput } from '../schemas/quick-trade.schema'
 import { addQuickTrade } from '../actions'
-import { invalidateTradeQueries } from '../utils'
+import type { Trade } from '../types'
 
 interface QuickPnlFormProps {
   accountId: string
@@ -36,11 +37,18 @@ export function QuickPnlForm({ accountId, date, onSuccess }: QuickPnlFormProps) 
 
   const onSubmit = async (values: QuickTradeInput) => {
     const res = await addQuickTrade(values)
-    if (res.error) {
-      toast.error(res.error)
+    if (res.error || !res.trade) {
+      toast.error(res.error ?? 'Failed to save trade')
       return
     }
-    await invalidateTradeQueries(queryClient, accountId, date)
+    // Write the new trade straight into the day's cache instead of
+    // invalidating it — skips the extra round trip that made it feel
+    // like the entry took a moment to show up after logging.
+    queryClient.setQueryData(queryKeys.dayTrades(accountId, date), (old: Trade[] | undefined) =>
+      old ? [...old, res.trade!] : [res.trade!],
+    )
+    queryClient.invalidateQueries({ queryKey: queryKeys.journal() })
+    queryClient.invalidateQueries({ queryKey: queryKeys.accounts() })
     const signedPnl = values.result === 'win' ? parseFloat(values.pnl) : -parseFloat(values.pnl)
     toast.success(`Trade logged · ${formatPnl(signedPnl, { showPlus: true })}`)
     reset({ accountId, date, result: 'win', pnl: '' })
