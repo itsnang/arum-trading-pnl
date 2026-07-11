@@ -7,6 +7,7 @@ import { trade } from '@/lib/db/schema/trade.table'
 import { withAuthAction } from '@/lib/better-auth/middleware'
 import type { QuickTradeInput } from '../schemas/quick-trade.schema'
 import type { CalcTradeInput } from '../schemas/calc-trade.schema'
+import type { Trade } from '../types'
 import { calcPnl } from '../utils/calc-pnl'
 
 export const getTradesForDay = withAuthAction(async ({ user }, accountId: string, date: string) => {
@@ -23,21 +24,25 @@ export const getTradesForDay = withAuthAction(async ({ user }, accountId: string
 })
 
 export const addQuickTrade = withAuthAction(
-  async ({ user }, input: QuickTradeInput): Promise<{ error?: string }> => {
+  async ({ user }, input: QuickTradeInput): Promise<{ error?: string; trade?: Trade }> => {
     const pnl = input.result === 'win' ? input.pnl : `-${input.pnl}`
     try {
-      await db.insert(trade).values({
-        id: crypto.randomUUID(),
-        userId: user.id,
-        accountId: input.accountId,
-        date: input.date,
-        mode: 'quick',
-        result: input.result,
-        pnl,
-      })
+      const [inserted] = await db
+        .insert(trade)
+        .values({
+          id: crypto.randomUUID(),
+          userId: user.id,
+          accountId: input.accountId,
+          date: input.date,
+          mode: 'quick',
+          result: input.result,
+          pnl,
+        })
+        .returning()
+      if (!inserted) return { error: 'Failed to save trade' }
       revalidatePath('/journal')
       revalidatePath('/accounts')
-      return {}
+      return { trade: inserted }
     } catch {
       return { error: 'Failed to save trade' }
     }

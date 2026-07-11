@@ -1,8 +1,7 @@
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
 import { getQueryClient } from '@/lib/query-client'
-import { queryKeys } from '@/lib/query-keys'
 import { toMonthKey } from '@/lib/format'
-import { getAccountsWithStats } from '@/features/accounts/actions/accounts'
+import { accountsQueryOptions } from '@/features/accounts/utils'
 import { monthJournalQueryOptions } from '@/features/journal/utils'
 import { JournalView } from './journal-view'
 
@@ -10,10 +9,7 @@ export default async function JournalPage() {
   const queryClient = getQueryClient()
   const month = toMonthKey(new Date())
 
-  const accounts = await queryClient.fetchQuery({
-    queryKey: queryKeys.accounts(),
-    queryFn: getAccountsWithStats,
-  })
+  const accounts = await queryClient.fetchQuery(accountsQueryOptions())
 
   const firstAccount = accounts[0]
   if (firstAccount) {

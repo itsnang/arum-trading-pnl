@@ -6,5 +6,6 @@ export function monthJournalQueryOptions(accountId: string, month: string) {
   return queryOptions({
     queryKey: queryKeys.monthJournal(accountId, month),
     queryFn: () => getMonthJournal(accountId, month),
+    staleTime: 2 * 60 * 1000,
   })
 }

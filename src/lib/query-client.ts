@@ -5,7 +5,10 @@ export function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 60 * 1000, // 1 minute — prevents refetch on RSC hydration
+        // 2 minutes — every mutation path invalidates its query keys explicitly
+        // (see invalidate-trade-queries.ts, add-account-form.tsx), so this is
+        // just a floor that avoids redundant refetches on remount/window-refocus.
+        staleTime: 2 * 60 * 1000,
       },
     },
   })

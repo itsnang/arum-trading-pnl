@@ -2,8 +2,7 @@ import type { ReactNode } from 'react'
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
 import { requireSession } from '@/lib/better-auth/session'
 import { getQueryClient } from '@/lib/query-client'
-import { queryKeys } from '@/lib/query-keys'
-import { getAccountsWithStats } from '@/features/accounts/actions/accounts'
+import { accountsQueryOptions } from '@/features/accounts/utils'
 import { AppShell } from '@/components/shared/app-shell'
 import { OnboardingGate } from './onboarding-gate'
 import { PrefetchController } from './prefetch-controller'
@@ -18,10 +17,7 @@ import { PrefetchController } from './prefetch-controller'
 export default async function AppLayout({ children }: { children: ReactNode }) {
   await requireSession()
   const queryClient = getQueryClient()
-  await queryClient.prefetchQuery({
-    queryKey: queryKeys.accounts(),
-    queryFn: getAccountsWithStats,
-  })
+  await queryClient.prefetchQuery(accountsQueryOptions())
 
   return (
     <AppShell>
