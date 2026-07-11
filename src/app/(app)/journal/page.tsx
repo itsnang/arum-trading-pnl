@@ -3,7 +3,7 @@ import { makeQueryClient } from '@/lib/query-client'
 import { queryKeys } from '@/lib/query-keys'
 import { toMonthKey } from '@/lib/format'
 import { getAccountsWithStats } from '@/features/accounts/actions/accounts'
-import { getMonthJournal } from '@/features/journal/actions/journal'
+import { monthJournalQueryOptions } from '@/features/journal/hooks/use-month-journal'
 import { JournalView } from './journal-view'
 
 export default async function JournalPage() {
@@ -17,10 +17,7 @@ export default async function JournalPage() {
 
   const firstAccount = accounts[0]
   if (firstAccount) {
-    await queryClient.prefetchQuery({
-      queryKey: queryKeys.monthJournal(firstAccount.id, month),
-      queryFn: () => getMonthJournal(firstAccount.id, month),
-    })
+    await queryClient.prefetchQuery(monthJournalQueryOptions(firstAccount.id, month))
   }
 
   return (
