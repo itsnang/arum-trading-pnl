@@ -20,6 +20,10 @@ export const auth = betterAuth({
     schema: { user: schema.user, session: schema.session, account: schema.account, verification: schema.verification },
   }),
   emailAndPassword: { enabled: true },
+  // Session lookups otherwise hit Postgres on every request (~0.6-1.7s round
+  // trip to the remote Supabase pooler). Caching the session+user payload in
+  // a signed cookie skips that DB round trip until the cache expires.
+  session: { cookieCache: { enabled: true, maxAge: 60 } },
   secret: env.BETTER_AUTH_SECRET,
   baseURL: env.BETTER_AUTH_URL,
   trustedOrigins: vercelTrustedOrigins.length > 0 ? vercelTrustedOrigins : undefined,
