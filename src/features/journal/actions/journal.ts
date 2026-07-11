@@ -1,10 +1,16 @@
 'use server'
 
-import { and, eq, gte, lte, sql } from 'drizzle-orm'
-import { db } from '@/lib/db/client'
-import { trade } from '@/lib/db/schema/trade.table'
+import { supabase } from '@/lib/supabase/client'
 import { withAuthAction } from '@/lib/better-auth/middleware'
 import type { MonthJournalData } from '../types'
+
+interface MonthJournalRow {
+  date: string
+  total_pnl: number | string
+  trade_count: number | string
+  win_count: number | string
+  loss_count: number | string
+}
 
 export const getMonthJournal = withAuthAction(async (
   { user },
@@ -18,31 +24,20 @@ export const getMonthJournal = withAuthAction(async (
   const lastDate = new Date(year, mon, 0).getDate()
   const lastDay = `${year}-${String(mon).padStart(2, '0')}-${String(lastDate).padStart(2, '0')}`
 
-  const rows = await db
-    .select({
-      date: trade.date,
-      totalPnl: sql<string>`SUM(${trade.pnl})`,
-      tradeCount: sql<string>`COUNT(*)`,
-      winCount: sql<string>`COUNT(*) FILTER (WHERE ${trade.result} = 'win')`,
-      lossCount: sql<string>`COUNT(*) FILTER (WHERE ${trade.result} = 'loss')`,
-    })
-    .from(trade)
-    .where(
-      and(
-        eq(trade.userId, user.id),
-        eq(trade.accountId, accountId),
-        gte(trade.date, firstDay),
-        lte(trade.date, lastDay),
-      ),
-    )
-    .groupBy(trade.date)
+  const { data, error } = await supabase.rpc('get_month_journal', {
+    p_user_id: user.id,
+    p_account_id: accountId,
+    p_first_day: firstDay,
+    p_last_day: lastDay,
+  })
+  if (error) throw new Error(error.message)
 
-  const days = rows.map((r) => ({
+  const days = (data as MonthJournalRow[]).map((r) => ({
     date: r.date,
-    totalPnl: parseFloat(r.totalPnl),
-    tradeCount: parseInt(r.tradeCount),
-    winCount: parseInt(r.winCount),
-    lossCount: parseInt(r.lossCount),
+    totalPnl: parseFloat(String(r.total_pnl)),
+    tradeCount: Number(r.trade_count),
+    winCount: Number(r.win_count),
+    lossCount: Number(r.loss_count),
   }))
 
   const netPnl = days.reduce((s, d) => s + d.totalPnl, 0)
