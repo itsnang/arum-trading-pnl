@@ -5,6 +5,15 @@ import { nextCookies } from 'better-auth/next-js'
 import { db, schema } from '@/lib/db'
 import { env } from '@/env'
 
+// VERCEL_URL is each deployment's own exact origin (preview builds get a unique
+// one every time); VERCEL_PROJECT_PRODUCTION_URL is the stable assigned production
+// domain. Both are set by Vercel with zero configuration, so trusting them is a
+// self-healing backstop if BETTER_AUTH_URL is ever missing/misconfigured in the
+// dashboard — never a `*.vercel.app` wildcard, which would trust unrelated sites.
+const vercelTrustedOrigins = [process.env.VERCEL_URL, process.env.VERCEL_PROJECT_PRODUCTION_URL]
+  .filter((host): host is string => !!host)
+  .map((host) => `https://${host}`)
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
@@ -13,10 +22,7 @@ export const auth = betterAuth({
   emailAndPassword: { enabled: true },
   secret: env.BETTER_AUTH_SECRET,
   baseURL: env.BETTER_AUTH_URL,
-  // VERCEL_URL is set by Vercel to each deployment's own exact origin (preview
-  // builds get a unique one every time), so this only ever trusts itself —
-  // not a `*.vercel.app` wildcard, which would trust unrelated Vercel sites too.
-  trustedOrigins: process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : undefined,
+  trustedOrigins: vercelTrustedOrigins.length > 0 ? vercelTrustedOrigins : undefined,
   plugins: [nextCookies()], // must be last plugin
 })
 
