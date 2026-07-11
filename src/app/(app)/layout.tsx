@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { Suspense } from 'react'
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
 import { requireSession } from '@/lib/better-auth/session'
-import { makeQueryClient } from '@/lib/query-client'
+import { getQueryClient } from '@/lib/query-client'
 import { queryKeys } from '@/lib/query-keys'
 import { getAccountsWithStats } from '@/features/accounts/actions/accounts'
 import { AppShell } from '@/components/shared/app-shell'
@@ -23,7 +23,7 @@ import { AppLoadingFallback } from './app-loading-fallback'
 // Hydrating once at this shared ancestor removes the race entirely.
 async function SessionGate({ children }: { children: ReactNode }) {
   await requireSession()
-  const queryClient = makeQueryClient()
+  const queryClient = getQueryClient()
   await queryClient.prefetchQuery({
     queryKey: queryKeys.accounts(),
     queryFn: getAccountsWithStats,
