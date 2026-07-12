@@ -53,9 +53,38 @@ export const addAccount = withAuthAction(
         startingBalance: input.startingBalance,
       })
       revalidatePath('/accounts')
+      revalidatePath('/journal')
       return {}
     } catch {
       return { error: 'Failed to create account' }
+    }
+  },
+)
+
+export const updateAccount = withAuthAction(
+  async (
+    { user },
+    accountId: string,
+    input: AddAccountInput,
+  ): Promise<{ error?: string }> => {
+    try {
+      const [updated] = await db
+        .update(tradingAccount)
+        .set({
+          name: input.name,
+          broker: input.broker ?? null,
+          type: input.type,
+          startingBalance: input.startingBalance,
+          updatedAt: new Date(),
+        })
+        .where(and(eq(tradingAccount.id, accountId), eq(tradingAccount.userId, user.id)))
+        .returning({ id: tradingAccount.id })
+      if (!updated) return { error: 'Account not found' }
+      revalidatePath('/accounts')
+      revalidatePath('/journal')
+      return {}
+    } catch {
+      return { error: 'Failed to update account' }
     }
   },
 )
@@ -67,6 +96,7 @@ export const deleteAccount = withAuthAction(
         .delete(tradingAccount)
         .where(and(eq(tradingAccount.id, accountId), eq(tradingAccount.userId, user.id)))
       revalidatePath('/accounts')
+      revalidatePath('/journal')
       return {}
     } catch {
       return { error: 'Failed to delete account' }

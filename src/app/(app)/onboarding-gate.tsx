@@ -1,7 +1,7 @@
 'use client'
 
 import { useAccounts } from '@/features/accounts/hooks/use-accounts'
-import { AddAccountForm } from '@/features/accounts/components/add-account-form'
+import { AccountForm } from '@/features/accounts/components/account-form'
 
 /** Blocks the app behind a blurred overlay until the user has at least one trading account. */
 export function OnboardingGate() {
@@ -17,7 +17,7 @@ export function OnboardingGate() {
           Add an account to start tracking your trades.
         </p>
         <div className="mt-4">
-          <AddAccountForm />
+          <AccountForm />
         </div>
       </div>
     </div>

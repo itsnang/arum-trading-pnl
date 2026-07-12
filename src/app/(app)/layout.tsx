@@ -6,6 +6,7 @@ import { accountsQueryOptions } from '@/features/accounts/utils'
 import { AppShell } from '@/components/shared/app-shell'
 import { OnboardingGate } from './onboarding-gate'
 import { PrefetchController } from './prefetch-controller'
+import { AccountSelectionSync } from './account-selection-sync'
 
 // The accounts query is hydrated *here*, above OnboardingGate/PrefetchController
 // and the page itself — all of which read it via useAccounts(). TanStack
@@ -23,6 +24,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <AppShell>
       <HydrationBoundary state={dehydrate(queryClient)}>
         {children}
+        <AccountSelectionSync />
         <OnboardingGate />
         <PrefetchController />
       </HydrationBoundary>

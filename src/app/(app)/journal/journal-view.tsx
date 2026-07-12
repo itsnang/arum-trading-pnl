@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { JournalScreen } from '@/features/journal/components/journal-screen'
 import { DayDialog } from '@/features/trades/components/day-dialog'
 import { useSelectedAccountStore } from '@/features/accounts/store/accounts.store'
@@ -15,14 +15,11 @@ interface JournalViewProps {
 export function JournalView({ defaultAccountId, defaultMonth, accounts }: JournalViewProps) {
   const [month, setMonth] = useState(defaultMonth)
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
-  const { selectedAccountId, setSelectedAccountId } = useSelectedAccountStore()
+  const selectedAccountId = useSelectedAccountStore((s) => s.selectedAccountId)
 
-  useEffect(() => {
-    if (!selectedAccountId && defaultAccountId) {
-      setSelectedAccountId(defaultAccountId)
-    }
-  }, [defaultAccountId, selectedAccountId, setSelectedAccountId])
-
+  // AccountSelectionSync (mounted app-wide) keeps selectedAccountId valid
+  // once accounts load; defaultAccountId is only the SSR-safe fallback for
+  // the very first paint, before that client-side sync has run.
   const accountId = selectedAccountId ?? defaultAccountId
 
   return (

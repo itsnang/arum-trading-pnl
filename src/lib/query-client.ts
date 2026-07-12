@@ -6,7 +6,7 @@ export function makeQueryClient() {
     defaultOptions: {
       queries: {
         // 2 minutes — every mutation path invalidates its query keys explicitly
-        // (see invalidate-trade-queries.ts, add-account-form.tsx), so this is
+        // (see invalidate-trade-queries.ts, account-form.tsx), so this is
         // just a floor that avoids redundant refetches on remount/window-refocus.
         staleTime: 2 * 60 * 1000,
       },

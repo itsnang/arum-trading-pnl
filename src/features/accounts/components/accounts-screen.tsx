@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import { signOut } from '@/lib/better-auth/client'
@@ -9,9 +9,10 @@ import { Separator } from '@/components/ui/separator'
 import { ThemeToggle } from '@/components/shared/theme-toggle'
 import { useSelectedAccountStore } from '../store/accounts.store'
 import { useAccounts } from '../hooks/use-accounts'
-import { AccountHero } from './account-hero'
+import { groupTotalsByType } from '../utils'
+import { AccountTypeTotals } from './account-type-totals'
 import { AccountCard } from './account-card'
-import { AddAccountSheet } from './add-account-sheet'
+import { AccountSheet } from './account-sheet'
 
 export function AccountsScreen() {
   const router = useRouter()
@@ -19,20 +20,7 @@ export function AccountsScreen() {
   const [addOpen, setAddOpen] = useState(false)
   const { selectedAccountId, setSelectedAccountId } = useSelectedAccountStore()
 
-  useEffect(() => {
-    if (!selectedAccountId && accounts.length > 0 && accounts[0]) {
-      setSelectedAccountId(accounts[0].id)
-    }
-  }, [accounts, selectedAccountId, setSelectedAccountId])
-
-  const totalEquity = accounts.reduce(
-    (sum, acc) => sum + parseFloat(acc.currentBalance),
-    0,
-  )
-  const totalPnl = accounts.reduce(
-    (sum, acc) => sum + parseFloat(acc.totalPnl),
-    0,
-  )
+  const typeTotals = groupTotalsByType(accounts)
 
   const handleSignOut = () => {
     signOut({ fetchOptions: { onSuccess: () => router.push('/login') } })
@@ -61,8 +49,8 @@ export function AccountsScreen() {
         </div>
       </div>
 
-      {/* Hero */}
-      <AccountHero totalEquity={totalEquity} totalPnl={totalPnl} />
+      {/* Per-type totals — balances/P&L are never blended across account types */}
+      <AccountTypeTotals totals={typeTotals} />
 
       {/* Account list */}
       <div className="flex flex-col gap-3 px-5">
@@ -90,7 +78,7 @@ export function AccountsScreen() {
         </Button>
       </div>
 
-      <AddAccountSheet open={addOpen} onClose={() => setAddOpen(false)} />
+      <AccountSheet open={addOpen} onClose={() => setAddOpen(false)} />
     </div>
   )
 }

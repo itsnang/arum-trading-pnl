@@ -10,7 +10,8 @@ import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { queryKeys } from '@/lib/query-keys'
 import { addAccountSchema, type AddAccountInput } from '../schemas'
-import { addAccount } from '../actions'
+import { addAccount, updateAccount } from '../actions'
+import type { AccountWithStats } from '../types'
 
 const ACCOUNT_TYPES = [
   { value: 'personal', label: 'Personal' },
@@ -18,11 +19,14 @@ const ACCOUNT_TYPES = [
   { value: 'demo', label: 'Demo' },
 ] as const
 
-interface AddAccountFormProps {
+interface AccountFormProps {
+  /** Pass an existing account to edit it; omit to create a new one. */
+  account?: AccountWithStats
   onSuccess?: () => void
 }
 
-export function AddAccountForm({ onSuccess }: AddAccountFormProps) {
+export function AccountForm({ account, onSuccess }: AccountFormProps) {
+  const isEdit = !!account
   const queryClient = useQueryClient()
   const {
     register,
@@ -33,20 +37,27 @@ export function AddAccountForm({ onSuccess }: AddAccountFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<AddAccountInput>({
     resolver: zodResolver(addAccountSchema),
-    defaultValues: { name: '', broker: '', type: 'personal', startingBalance: '' },
+    defaultValues: account
+      ? {
+          name: account.name,
+          broker: account.broker ?? '',
+          type: account.type,
+          startingBalance: account.startingBalance,
+        }
+      : { name: '', broker: '', type: 'personal', startingBalance: '' },
   })
 
   const selectedType = watch('type')
 
   const onSubmit = async (values: AddAccountInput) => {
-    const result = await addAccount(values)
+    const result = isEdit ? await updateAccount(account.id, values) : await addAccount(values)
     if (result.error) {
       toast.error(result.error)
       return
     }
     await queryClient.invalidateQueries({ queryKey: queryKeys.accounts() })
-    toast.success('Account created')
-    reset()
+    toast.success(isEdit ? 'Account updated' : 'Account created')
+    if (!isEdit) reset()
     onSuccess?.()
   }
 
@@ -108,7 +119,7 @@ export function AddAccountForm({ onSuccess }: AddAccountFormProps) {
       </div>
 
       <Button type="submit" disabled={isSubmitting} className="mt-1 w-full active:scale-[0.98]">
-        {isSubmitting ? 'Creating…' : 'Create account'}
+        {isSubmitting ? 'Saving…' : isEdit ? 'Save changes' : 'Create account'}
       </Button>
     </form>
   )
