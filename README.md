@@ -1,10 +1,45 @@
-# nextjs-vertical-slice-starter-pack
+# Pipfolio
 
-A Next.js 16 starter that demonstrates **vertical-slice architecture**: business logic organized by feature/domain rather than by technical layer, with a working example included.
+A mobile-first XAU/USD trading journal. Log daily P&L, browse a monthly calendar
+of results, track multiple trading accounts (personal / funded / demo), and see
+win rate and net P&L at a glance — without ever blending money across account
+types that don't belong together.
 
-## What is vertical-slice architecture
+<p align="center">
+  <img src=".readme-assets/journal.png" alt="Journal — monthly calendar view" width="320" />
+  <img src=".readme-assets/accounts.png" alt="Accounts — per-type totals and account list" width="320" />
+</p>
 
-Instead of splitting code horizontally (`controllers/`, `services/`, `models/`), each feature owns everything it needs — its own actions, components, hooks, schemas, and types — in one folder:
+## Features
+
+- **Monthly journal calendar** — every day colored by win/loss, with a
+  month-net P&L and win-rate summary up top
+- **Quick Log** — log a day's result (win/loss + P&L) from a bottom sheet in
+  a couple of taps
+- **Multiple trading accounts** — personal, funded, and demo accounts, each
+  with its own balance and trade history; create, rename, and delete accounts
+  from the Accounts screen
+- **Type-segregated totals** — personal, funded, and demo balances/P&L are
+  always shown and summed separately, since combining a funded account with
+  personal capital would misrepresent what's actually at risk
+- **Persisted account selection** — the account you're journaling against is
+  remembered across visits (localStorage)
+- **Dark, warm "paper & clay" theme** with light mode support
+
+## Tech stack
+
+- [Next.js 16](https://nextjs.org) (App Router, Turbopack, Server Actions)
+- [better-auth](https://www.better-auth.com) for authentication
+- [Drizzle ORM](https://orm.drizzle.team) on Postgres
+- [TanStack Query v5](https://tanstack.com/query/latest) for server state
+- [Zustand](https://zustand.docs.pmnd.rs) for client/domain state
+- [React Hook Form](https://react-hook-form.com) + [Zod](https://zod.dev) for every form
+- [Tailwind CSS v4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com) (New York style)
+
+## Architecture
+
+Business logic is organized by feature, not by technical layer — each domain
+owns its actions, components, hooks, schemas, and store:
 
 ```
 src/features/<domain>/
@@ -17,29 +52,16 @@ src/features/<domain>/
   utils/        ← domain-aware helpers
 ```
 
-Slices don't import from each other — shared code lives in `src/components/shared/` or `src/lib/`. This keeps features independently understandable and deletable.
+Slices (`auth`, `accounts`, `trades`, `journal`) never import from each other —
+shared code lives in `src/components/shared/` or `src/lib/`.
 
-## What's included
-
-- **`auth` feature slice** — login/register on better-auth (`src/lib/better-auth/`), Postgres via Drizzle ORM (`src/lib/db/`)
-- **shadcn/ui** components (New York style) in `src/components/ui/`
-- **TanStack Query v5** setup (`src/app/providers.tsx`, `src/lib/query-client.ts`) for server state
-- **Zustand** conventions for client-only domain state
-- **React Hook Form + Zod** convention for every form
-- **TailwindCSS v4** (config lives in `src/app/globals.css`, no `tailwind.config.ts`)
-- A protected home page (`/`) showing the signed-in user, guarded by `src/proxy.ts`
-
-See [CLAUDE.md](./CLAUDE.md) for the full architectural rulebook (naming conventions, dependency rules, TypeScript strictness, etc.) — it's written for both humans and Claude Code.
-
-## Adding a new slice
-
-1. Create `src/features/<your-domain>/` with whichever of `actions/`, `components/`, `hooks/`, `schemas/`, `store/`, `types.ts`, `utils/` you need
-2. Add a route under `src/app/` that renders your slice's components
-3. Keep pages under `src/app/` thin — business logic stays in the slice
+See [CLAUDE.md](./CLAUDE.md) for the full architectural rulebook (naming
+conventions, dependency rules, TypeScript strictness, etc.).
 
 ## Quickstart
 
-Needs a Postgres database — any reachable instance works (a local install, or a free hosted one like Neon, Supabase, or Railway).
+Needs a Postgres database — any reachable instance works (a local install, or
+a free hosted one like Neon, Supabase, or Railway).
 
 ```bash
 npm install
@@ -48,7 +70,7 @@ npm run db:generate && npm run db:migrate
 npm run dev                        # http://localhost:3000
 ```
 
-Visit `/register` to create an account — you'll land on `/`, a protected page showing your session's user (derived server-side via `requireSession()` in `src/lib/better-auth/session.ts`, never from client input).
+Visit `/register` to create an account, then `/journal` to start logging trades.
 
 Other commands:
 
@@ -59,4 +81,6 @@ npx tsc --noEmit  # type check only
 npm run db:studio # Drizzle Studio
 ```
 
-Use `npx drizzle-kit push` for ad-hoc schema syncing during prototyping — the checked-in workflow is `db:generate` + `db:migrate`.
+## License
+
+Copyright © 2026 Chhay. All rights reserved.
