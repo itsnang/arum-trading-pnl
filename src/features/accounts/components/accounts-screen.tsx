@@ -76,6 +76,9 @@ export function AccountsScreen() {
         <Button variant="outline" className="w-full" onClick={handleSignOut}>
           Sign out
         </Button>
+        <p className="mt-4 text-center text-[11px] text-muted-foreground">
+          © {new Date().getFullYear()} Pipfolio · Built by Chhay
+        </p>
       </div>
 
       <AccountSheet open={addOpen} onClose={() => setAddOpen(false)} />
