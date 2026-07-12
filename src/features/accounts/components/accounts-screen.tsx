@@ -53,9 +53,9 @@ export function AccountsScreen() {
       <AccountTypeTotals totals={typeTotals} />
 
       {/* Account list */}
-      <div className="flex flex-col gap-3 px-5">
+      <div className="flex flex-col gap-3 px-5 lg:grid lg:grid-cols-2 lg:gap-4 xl:grid-cols-3">
         {accounts.length === 0 ? (
-          <div className="py-12 text-center text-sm text-muted-foreground">
+          <div className="py-12 text-center text-sm text-muted-foreground lg:col-span-2 xl:col-span-3">
             No accounts yet. Add one to get started.
           </div>
         ) : (
@@ -70,8 +70,8 @@ export function AccountsScreen() {
         )}
       </div>
 
-      {/* Sign out */}
-      <div className="mt-8 px-5 pb-4">
+      {/* Sign out — desktop/tablet sidebar has its own, so this is mobile-only */}
+      <div className="mt-8 px-5 pb-4 md:hidden">
         <Separator className="mb-6" />
         <Button variant="outline" className="w-full" onClick={handleSignOut}>
           Sign out

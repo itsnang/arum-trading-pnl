@@ -22,7 +22,7 @@ export function AccountTypeTotals({ totals }: AccountTypeTotalsProps) {
   if (totals.length === 0) return null
 
   return (
-    <div className="mx-5 mb-4 grid grid-cols-2 gap-2 [&>*:last-child:nth-child(odd)]:col-span-2">
+    <div className="mx-5 mb-4 grid grid-cols-2 gap-2 max-md:[&>*:last-child:nth-child(odd)]:col-span-2 md:grid-cols-3">
       {totals.map(({ type, equity, pnl }) => {
         const isPositive = pnl >= 0
         return (

@@ -8,6 +8,7 @@ import { useMonthJournal } from '../hooks/use-month-journal'
 import { MonthNav } from './month-nav'
 import { MonthHero } from './month-hero'
 import { MonthCalendar } from './month-calendar'
+import { RecentDaysPanel } from './recent-days-panel'
 import type { AccountWithStatsLike } from '../types'
 
 interface JournalScreenProps {
@@ -47,7 +48,8 @@ export function JournalScreen({
 
   return (
     <div className="flex flex-col">
-      {/* Header */}
+      {/* Header — spans full width above both columns, so the calendar and
+          the side panel below start level with each other. */}
       <div className="flex items-center justify-between gap-2 px-5 pt-12 pb-2">
         <div>
           <h1 className="text-xl font-extrabold">Journal</h1>
@@ -68,23 +70,35 @@ export function JournalScreen({
         </div>
       </div>
 
-      {/* Month navigation */}
-      <MonthNav
-        month={month}
-        onPrev={() => onMonthChange(shiftMonth(month, -1))}
-        onNext={() => onMonthChange(shiftMonth(month, 1))}
-      />
+      <div className="flex flex-col lg:flex-row lg:items-start">
+        <div className="flex-1 lg:min-w-0">
+          {/* Month navigation */}
+          <MonthNav
+            month={month}
+            onPrev={() => onMonthChange(shiftMonth(month, -1))}
+            onNext={() => onMonthChange(shiftMonth(month, 1))}
+          />
 
-      {/* Hero */}
-      <MonthHero data={journalData} />
+          {/* Hero */}
+          <MonthHero data={journalData} />
 
-      {/* Calendar */}
-      <MonthCalendar
-        month={month}
-        days={journalData.days}
-        selectedDate={selectedDate}
-        onDayPress={onDayPress}
-      />
+          {/* Calendar */}
+          <MonthCalendar
+            month={month}
+            days={journalData.days}
+            selectedDate={selectedDate}
+            onDayPress={onDayPress}
+          />
+        </div>
+
+        {/* Recent days — tablet/desktop only: stacked below the calendar at
+            md, beside it at lg. Mobile already has per-day detail via the
+            sheet. Starts level with MonthNav now that the header sits above
+            the split, instead of level with the page title. */}
+        <aside className="hidden px-5 md:mt-6 md:block lg:w-80 lg:shrink-0 lg:pl-0">
+          <RecentDaysPanel days={journalData.days} selectedDate={selectedDate} onDayPress={onDayPress} />
+        </aside>
+      </div>
     </div>
   )
 }
