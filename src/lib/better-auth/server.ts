@@ -4,6 +4,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { nextCookies } from 'better-auth/next-js'
 import { db, schema } from '@/lib/db'
 import { env } from '@/env'
+import { sendResetPasswordEmail } from './send-reset-password-email'
 
 // VERCEL_URL is each deployment's own exact origin (preview builds get a unique
 // one every time); VERCEL_PROJECT_PRODUCTION_URL is the stable assigned production
@@ -19,7 +20,12 @@ export const auth = betterAuth({
     provider: 'pg',
     schema: { user: schema.user, session: schema.session, account: schema.account, verification: schema.verification },
   }),
-  emailAndPassword: { enabled: true },
+  emailAndPassword: {
+    enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendResetPasswordEmail({ to: user.email, url })
+    },
+  },
   // Session lookups otherwise hit Postgres on every request (~0.6-1.7s round
   // trip to the remote Supabase pooler). Caching the session+user payload in
   // a signed cookie skips that DB round trip until the cache expires.
