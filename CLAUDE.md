@@ -25,6 +25,14 @@ No test runner is configured. Use `npm run lint && npx tsc --noEmit` as the qual
 
 To add a shadcn component: `npx shadcn@latest add <component-name>`
 
+## Branch naming
+
+`feature/<kind>/<short-description>`, where `<kind>` is:
+- `implement` — a net-new feature or slice that didn't exist before (e.g. `feature/implement/forgot-password`)
+- `improvement` — polish, UX, or additive changes to something that already exists (e.g. `feature/improvement/auth-ui-and-trade-notes`)
+
+Other prefixes used in this repo for non-feature work: `fix/`, `chore/`, `perf/`, `refactor/` (e.g. `fix/journal-account-hydration`, `perf/tanstack-query-caching`).
+
 ## Architecture
 
 ### Feature-Module structure
