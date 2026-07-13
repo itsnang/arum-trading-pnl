@@ -24,6 +24,9 @@ export const trade = pgTable(
     entryPrice: numeric('entry_price', { precision: 15, scale: 5 }),
     exitPrice: numeric('exit_price', { precision: 15, scale: 5 }),
     lotSize: numeric('lot_size', { precision: 10, scale: 2 }),
+    // Storage-adapter path (not a signed URL, which expires) — resolve to a
+    // fresh signed URL at read time via storageAdapter.getSignedUrl().
+    screenshotPath: text('screenshot_path'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },

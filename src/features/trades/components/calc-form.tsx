@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
@@ -12,6 +13,7 @@ import { formatPnl } from '@/lib/format'
 import { calcTradeSchema, type CalcTradeInput } from '../schemas/calc-trade.schema'
 import { addCalcTrade } from '../actions'
 import { calcPnl, invalidateTradeQueries } from '../utils'
+import { ScreenshotPicker } from './screenshot-picker'
 
 interface CalcFormProps {
   accountId: string
@@ -29,6 +31,7 @@ function previewCalcPnl(direction: 'buy' | 'sell', entry: string, exit: string, 
 
 export function CalcForm({ accountId, date, onSuccess }: CalcFormProps) {
   const queryClient = useQueryClient()
+  const [pickerKey, setPickerKey] = useState(0)
   const {
     register,
     handleSubmit,
@@ -59,6 +62,7 @@ export function CalcForm({ accountId, date, onSuccess }: CalcFormProps) {
     )
     toast.success(`Trade logged · ${formatPnl(rawPnl, { showPlus: true })}`)
     reset({ accountId, date, direction: 'buy', entryPrice: '', exitPrice: '', lotSize: '' })
+    setPickerKey((k) => k + 1)
     onSuccess?.()
   }
 
@@ -117,6 +121,8 @@ export function CalcForm({ accountId, date, onSuccess }: CalcFormProps) {
       >
         {previewPnl === null ? 'P&L —' : formatPnl(previewPnl, { showPlus: true })}
       </div>
+
+      <ScreenshotPicker key={pickerKey} onChange={(path) => setValue('screenshotPath', path)} />
 
       <Button type="submit" disabled={isSubmitting} className="w-full active:scale-[0.98]">
         {isSubmitting ? 'Saving…' : 'Add trade'}

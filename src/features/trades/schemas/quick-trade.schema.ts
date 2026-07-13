@@ -11,6 +11,7 @@ export const quickTradeSchema = z.object({
       (v) => !isNaN(parseFloat(v)) && parseFloat(v) > 0,
       'Enter a positive amount',
     ),
+  screenshotPath: z.string().optional(),
 })
 
 export type QuickTradeInput = z.infer<typeof quickTradeSchema>

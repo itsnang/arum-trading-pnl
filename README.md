@@ -10,6 +10,15 @@ types that don't belong together.
   <img src=".readme-assets/accounts.png" alt="Accounts — per-type totals and account list" width="320" />
 </p>
 
+Tablet and desktop get a sidebar nav, a wider layout, and a "Recent days" panel next to the calendar:
+
+<p align="center">
+  <img src=".readme-assets/journal-desktop.png" alt="Journal on desktop — sidebar nav and Recent days side panel" width="700" />
+</p>
+<p align="center">
+  <img src=".readme-assets/accounts-desktop.png" alt="Accounts on desktop — sidebar nav and widened account grid" width="700" />
+</p>
+
 ## Features
 
 - **Monthly journal calendar** — every day colored by win/loss, with a
@@ -24,6 +33,8 @@ types that don't belong together.
   personal capital would misrepresent what's actually at risk
 - **Persisted account selection** — the account you're journaling against is
   remembered across visits (localStorage)
+- **Responsive** — mobile-first, with a dedicated tablet/desktop layout
+  (sidebar nav, wider grids, a "Recent days" panel next to the calendar)
 - **Dark, warm "paper & clay" theme** with light mode support
 
 ## Tech stack

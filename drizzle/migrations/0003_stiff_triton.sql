@@ -1,0 +1,1 @@
+ALTER TABLE "trade" ADD COLUMN "screenshot_path" text;

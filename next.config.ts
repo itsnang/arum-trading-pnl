@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
   experimental: {
     // Tree-shake large barrel-file packages at build time
     optimizePackageImports: ["framer-motion", "radix-ui", "lucide-react"],
+    serverActions: {
+      // Headroom over storage's MAX_UPLOAD_BYTES (5MB) for multipart overhead
+      bodySizeLimit: "6mb",
+    },
   },
 
   async headers() {

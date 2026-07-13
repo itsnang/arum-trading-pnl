@@ -14,6 +14,8 @@ export interface Trade {
   entryPrice: string | null
   exitPrice: string | null
   lotSize: string | null
+  screenshotPath: string | null
+  screenshotUrl: string | null
   createdAt: Date
   updatedAt: Date
 }

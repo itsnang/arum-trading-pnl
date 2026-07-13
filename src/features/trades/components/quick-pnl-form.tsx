@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
@@ -12,6 +13,7 @@ import { formatPnl } from '@/lib/format'
 import { queryKeys } from '@/lib/query-keys'
 import { quickTradeSchema, type QuickTradeInput } from '../schemas/quick-trade.schema'
 import { addQuickTrade } from '../actions'
+import { ScreenshotPicker } from './screenshot-picker'
 import type { Trade } from '../types'
 
 interface QuickPnlFormProps {
@@ -22,6 +24,7 @@ interface QuickPnlFormProps {
 
 export function QuickPnlForm({ accountId, date, onSuccess }: QuickPnlFormProps) {
   const queryClient = useQueryClient()
+  const [pickerKey, setPickerKey] = useState(0)
   const {
     register,
     handleSubmit,
@@ -53,6 +56,7 @@ export function QuickPnlForm({ accountId, date, onSuccess }: QuickPnlFormProps) 
     const signedPnl = values.result === 'win' ? parseFloat(values.pnl) : -parseFloat(values.pnl)
     toast.success(`Trade logged · ${formatPnl(signedPnl, { showPlus: true })}`)
     reset({ accountId, date, result: 'win', pnl: '' })
+    setPickerKey((k) => k + 1)
     onSuccess?.()
   }
 
@@ -92,6 +96,8 @@ export function QuickPnlForm({ accountId, date, onSuccess }: QuickPnlFormProps) 
         </div>
         {errors.pnl && <p className="text-xs text-red">{errors.pnl.message}</p>}
       </div>
+
+      <ScreenshotPicker key={pickerKey} onChange={(path) => setValue('screenshotPath', path)} />
 
       <Button
         type="submit"
