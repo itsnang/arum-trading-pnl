@@ -5,16 +5,11 @@ import { and, eq } from 'drizzle-orm'
 import { db } from '@/lib/db/client'
 import { trade } from '@/lib/db/schema/trade.table'
 import { withAuthAction } from '@/lib/better-auth/middleware'
-import { storageAdapter } from '@/lib/storage'
+import { storageAdapter, resolveSignedUrl } from '@/lib/storage'
 import type { QuickTradeInput } from '../schemas/quick-trade.schema'
 import type { CalcTradeInput } from '../schemas/calc-trade.schema'
 import type { Trade } from '../types'
 import { calcPnl } from '../utils/calc-pnl'
-
-async function resolveScreenshotUrl(screenshotPath: string | null): Promise<string | null> {
-  if (!screenshotPath) return null
-  return storageAdapter.getSignedUrl(screenshotPath).catch(() => null)
-}
 
 export const getTradesForDay = withAuthAction(async ({ user }, accountId: string, date: string) => {
   const rows = await db
@@ -28,9 +23,9 @@ export const getTradesForDay = withAuthAction(async ({ user }, accountId: string
       ),
     )
   return Promise.all(
-    rows.map(async (row): Promise<Trade> => ({
+    rows.map(async ({ screenshotPath, ...row }): Promise<Trade> => ({
       ...row,
-      screenshotUrl: await resolveScreenshotUrl(row.screenshotPath),
+      screenshotUrl: await resolveSignedUrl(screenshotPath),
     })),
   )
 })
@@ -55,7 +50,11 @@ export const addQuickTrade = withAuthAction(
       if (!inserted) return { error: 'Failed to save trade' }
       revalidatePath('/journal')
       revalidatePath('/accounts')
-      return { trade: { ...inserted, screenshotUrl: await resolveScreenshotUrl(inserted.screenshotPath) } }
+      // The client already holds a signed URL for this exact file from the
+      // upload step moments earlier — echo it back instead of re-signing.
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructured to drop screenshotPath from the client-facing Trade
+      const { screenshotPath, ...rest } = inserted
+      return { trade: { ...rest, screenshotUrl: input.screenshotUrl ?? null } }
     } catch {
       return { error: 'Failed to save trade' }
     }

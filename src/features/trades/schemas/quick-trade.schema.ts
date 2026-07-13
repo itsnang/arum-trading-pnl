@@ -12,6 +12,7 @@ export const quickTradeSchema = z.object({
       'Enter a positive amount',
     ),
   screenshotPath: z.string().optional(),
+  screenshotUrl: z.string().optional(),
 })
 
 export type QuickTradeInput = z.infer<typeof quickTradeSchema>

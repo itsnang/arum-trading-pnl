@@ -17,6 +17,7 @@ export const calcTradeSchema = z.object({
   exitPrice: positiveNumStr('exit price'),
   lotSize: positiveNumStr('lot size'),
   screenshotPath: z.string().optional(),
+  screenshotUrl: z.string().optional(),
 })
 
 export type CalcTradeInput = z.infer<typeof calcTradeSchema>
