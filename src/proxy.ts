@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import { getSessionCookie } from 'better-auth/cookies'
 
 const PUBLIC_API_PATHS = ['/api/auth']
-const AUTH_PATHS = ['/login', '/register']
+const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password']
 
 function matchesPath(pathname: string, paths: string[]): boolean {
   return paths.some((path) => pathname === path || pathname.startsWith(`${path}/`))
