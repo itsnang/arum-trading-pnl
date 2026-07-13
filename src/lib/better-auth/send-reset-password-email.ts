@@ -22,7 +22,7 @@ function resetPasswordEmailHtml(url: string): string {
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:440px;background-color:#FAF8F3;border-radius:16px;overflow:hidden;">
         <tr>
           <td style="padding:32px 32px 8px;text-align:center;">
-            <img src="${env.BETTER_AUTH_URL}/icons/icon-512.png" width="40" height="40" alt="Pipfolio" style="display:block;margin:0 auto;width:40px;height:40px;border-radius:10px;">
+            <span style="display:inline-block;width:40px;height:40px;line-height:40px;border-radius:10px;background-color:#C25E3A;color:#FAF8F3;font-weight:700;font-size:18px;">P</span>
           </td>
         </tr>
         <tr>
