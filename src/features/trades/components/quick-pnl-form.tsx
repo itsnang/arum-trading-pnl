@@ -7,6 +7,8 @@ import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { formatPnl } from '@/lib/format'
 import { queryKeys } from '@/lib/query-keys'
@@ -32,7 +34,7 @@ export function QuickPnlForm({ accountId, date, onSuccess }: QuickPnlFormProps) 
     formState: { errors, isSubmitting },
   } = useForm<QuickTradeInput>({
     resolver: zodResolver(quickTradeSchema),
-    defaultValues: { accountId, date, result: 'win', pnl: '' },
+    defaultValues: { accountId, date, result: 'win', pnl: '', note: '' },
   })
 
   const result = watch('result')
@@ -55,7 +57,7 @@ export function QuickPnlForm({ accountId, date, onSuccess }: QuickPnlFormProps) 
     queryClient.invalidateQueries({ queryKey: queryKeys.accounts() })
     const signedPnl = values.result === 'win' ? parseFloat(values.pnl) : -parseFloat(values.pnl)
     toast.success(`Trade logged · ${formatPnl(signedPnl, { showPlus: true })}`)
-    reset({ accountId, date, result: 'win', pnl: '' })
+    reset({ accountId, date, result: 'win', pnl: '', note: '' })
     onSuccess?.()
   }
 
@@ -94,6 +96,18 @@ export function QuickPnlForm({ accountId, date, onSuccess }: QuickPnlFormProps) 
           />
         </div>
         {errors.pnl && <p className="text-xs text-red">{errors.pnl.message}</p>}
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="note">Note (optional)</Label>
+        <Textarea
+          id="note"
+          rows={2}
+          placeholder="What's your read on this trade?"
+          className="resize-none text-sm"
+          {...register('note')}
+        />
+        {errors.note && <p className="text-xs text-red">{errors.note.message}</p>}
       </div>
 
       <ScreenshotPicker
