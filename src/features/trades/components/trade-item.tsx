@@ -24,51 +24,58 @@ export function TradeItem({ trade: t, onDelete, isDeleting }: TradeItemProps) {
   const isPositive = pnl >= 0
 
   return (
-    <div className="flex items-center gap-3">
-      <span
-        className={cn(
-          'shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-bold tracking-wide',
-          badge.className,
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-3">
+        <span
+          className={cn(
+            'shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-bold tracking-wide',
+            badge.className,
+          )}
+        >
+          {badge.label}
+        </span>
+        {t.screenshotUrl && (
+          <a href={t.screenshotUrl} target="_blank" rel="noopener noreferrer" className="shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element -- signed URL, expires in 1h; not a next/image candidate */}
+            <img
+              src={t.screenshotUrl}
+              alt="Trade screenshot"
+              className="size-7 rounded-md border border-line object-cover"
+            />
+          </a>
         )}
-      >
-        {badge.label}
-      </span>
-      {t.screenshotUrl && (
-        <a href={t.screenshotUrl} target="_blank" rel="noopener noreferrer" className="shrink-0">
-          {/* eslint-disable-next-line @next/next/no-img-element -- signed URL, expires in 1h; not a next/image candidate */}
-          <img
-            src={t.screenshotUrl}
-            alt="Trade screenshot"
-            className="size-7 rounded-md border border-line object-cover"
-          />
-        </a>
-      )}
-      <div className="min-w-0 flex-1">
-        {t.mode === 'calc' && t.entryPrice && t.exitPrice ? (
-          <p className="truncate text-xs tabular-nums text-muted-foreground">
-            {Number(t.entryPrice).toFixed(2)} → {Number(t.exitPrice).toFixed(2)} ·{' '}
-            {Number(t.lotSize).toFixed(2)}
-          </p>
-        ) : (
-          <p className="text-xs text-muted-foreground">Quick log</p>
-        )}
+        <div className="min-w-0 flex-1">
+          {t.mode === 'calc' && t.entryPrice && t.exitPrice ? (
+            <p className="truncate text-xs tabular-nums text-muted-foreground">
+              {Number(t.entryPrice).toFixed(2)} → {Number(t.exitPrice).toFixed(2)} ·{' '}
+              {Number(t.lotSize).toFixed(2)}
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground">Quick log</p>
+          )}
+        </div>
+        <span
+          className={cn(
+            'shrink-0 text-sm font-semibold',
+            isPositive ? 'text-green' : 'text-red',
+          )}
+        >
+          {formatPnl(pnl, { showPlus: true })}
+        </span>
+        <button
+          type="button"
+          disabled={isDeleting}
+          onClick={() => onDelete(t.id)}
+          className="shrink-0 rounded-full p-1 text-muted-foreground transition-transform hover:bg-hair active:scale-90 disabled:opacity-40"
+        >
+          <X size={14} />
+        </button>
       </div>
-      <span
-        className={cn(
-          'shrink-0 text-sm font-semibold',
-          isPositive ? 'text-green' : 'text-red',
-        )}
-      >
-        {formatPnl(pnl, { showPlus: true })}
-      </span>
-      <button
-        type="button"
-        disabled={isDeleting}
-        onClick={() => onDelete(t.id)}
-        className="shrink-0 rounded-full p-1 text-muted-foreground transition-transform hover:bg-hair active:scale-90 disabled:opacity-40"
-      >
-        <X size={14} />
-      </button>
+      {t.note && (
+        <p className="whitespace-pre-wrap wrap-break-word pl-1 text-xs italic text-muted-foreground/80">
+          &quot;{t.note}&quot;
+        </p>
+      )}
     </div>
   )
 }

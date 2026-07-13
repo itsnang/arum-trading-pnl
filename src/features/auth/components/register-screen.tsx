@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Mail, User } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -10,6 +10,7 @@ import { signUp } from '@/lib/better-auth/client'
 import { registerSchema, type RegisterInput } from '../schemas'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { PasswordField } from '@/components/shared/password-field'
 import { AppLogo } from '@/components/shared/app-logo'
 
@@ -39,7 +40,7 @@ export function RegisterScreen() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center py-10 px-4">
       <AppLogo className="w-15.5 h-15.5 mb-5 shadow-lg shadow-clay/30" />
-      <div className="w-full max-w-sm rounded-xl bg-card px-7 py-8 shadow-lg">
+      <div className="w-full max-w-sm rounded-xl border border-line bg-card px-7 py-8 shadow-lg">
         <h1 className="text-[28px] leading-tight mb-1 text-foreground">
           Create account
         </h1>
@@ -58,13 +59,16 @@ export function RegisterScreen() {
                     Full name
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Jane Doe"
-                      autoComplete="name"
-                      className="h-11 rounded-xl text-sm"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        type="text"
+                        placeholder="Jane Doe"
+                        autoComplete="name"
+                        className="h-11 rounded-xl pl-9 text-sm"
+                        {...field}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage className="text-xs" />
                 </FormItem>
@@ -80,13 +84,16 @@ export function RegisterScreen() {
                     Email
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="you@example.com"
-                      autoComplete="email"
-                      className="h-11 rounded-xl text-sm"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        type="email"
+                        placeholder="you@example.com"
+                        autoComplete="email"
+                        className="h-11 rounded-xl pl-9 text-sm"
+                        {...field}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage className="text-xs" />
                 </FormItem>
@@ -107,14 +114,14 @@ export function RegisterScreen() {
               autoComplete="new-password"
             />
 
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-12 rounded-lg text-sm font-semibold tracking-wide transition-opacity hover:opacity-90 disabled:opacity-60 mt-2 flex items-center justify-center gap-2 bg-primary text-primary-foreground"
+              className="w-full h-12 rounded-lg text-sm font-semibold tracking-wide active:scale-[0.98] mt-2"
             >
               {isSubmitting && <Loader2 size={15} className="animate-spin" />}
               Create account
-            </button>
+            </Button>
           </form>
         </Form>
       </div>

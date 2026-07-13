@@ -48,13 +48,13 @@ export function BottomSheet({ open, onClose, title, children, className }: Botto
               isDesktop ? { duration: 0.15 } : { type: 'spring', damping: 30, stiffness: 300 }
             }
             className={cn(
-              'fixed z-50 mx-auto max-w-107.5 bg-background pb-safe',
+              'fixed z-50 mx-auto flex max-h-[85vh] max-w-107.5 flex-col bg-background pb-safe',
               'bottom-0 left-0 right-0 rounded-t-xl',
               'md:bottom-auto md:left-1/2 md:right-auto md:top-1/2 md:w-full md:max-w-120 md:rounded-xl',
               className,
             )}
           >
-            <div className="flex items-center justify-between border-b border-line px-5 py-4">
+            <div className="flex shrink-0 items-center justify-between border-b border-line px-5 py-4">
               <h2 className="text-base font-semibold">{title}</h2>
               <button
                 type="button"
@@ -64,7 +64,7 @@ export function BottomSheet({ open, onClose, title, children, className }: Botto
                 <X size={18} />
               </button>
             </div>
-            {children}
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</div>
           </motion.div>
         </>
       )}

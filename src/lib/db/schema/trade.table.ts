@@ -27,6 +27,7 @@ export const trade = pgTable(
     // Storage-adapter path (not a signed URL, which expires) — resolve to a
     // fresh signed URL at read time via storageAdapter.getSignedUrl().
     screenshotPath: text('screenshot_path'),
+    note: text('note'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },
