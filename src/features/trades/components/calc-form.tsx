@@ -12,6 +12,7 @@ import { formatPnl } from '@/lib/format'
 import { calcTradeSchema, type CalcTradeInput } from '../schemas/calc-trade.schema'
 import { addCalcTrade } from '../actions'
 import { calcPnl, invalidateTradeQueries } from '../utils'
+import { ScreenshotPicker } from './screenshot-picker'
 
 interface CalcFormProps {
   accountId: string
@@ -42,6 +43,8 @@ export function CalcForm({ accountId, date, onSuccess }: CalcFormProps) {
   })
 
   const [direction, entry, exit, lots] = watch(['direction', 'entryPrice', 'exitPrice', 'lotSize'])
+  const screenshotPath = watch('screenshotPath')
+  const screenshotUrl = watch('screenshotUrl')
   const previewPnl = previewCalcPnl(direction, entry, exit, lots)
 
   const onSubmit = async (values: CalcTradeInput) => {
@@ -117,6 +120,14 @@ export function CalcForm({ accountId, date, onSuccess }: CalcFormProps) {
       >
         {previewPnl === null ? 'P&L —' : formatPnl(previewPnl, { showPlus: true })}
       </div>
+
+      <ScreenshotPicker
+        value={screenshotPath && screenshotUrl ? { path: screenshotPath, url: screenshotUrl } : undefined}
+        onChange={(next) => {
+          setValue('screenshotPath', next?.path)
+          setValue('screenshotUrl', next?.url)
+        }}
+      />
 
       <Button type="submit" disabled={isSubmitting} className="w-full active:scale-[0.98]">
         {isSubmitting ? 'Saving…' : 'Add trade'}

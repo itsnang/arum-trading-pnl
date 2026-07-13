@@ -12,6 +12,7 @@ import { formatPnl } from '@/lib/format'
 import { queryKeys } from '@/lib/query-keys'
 import { quickTradeSchema, type QuickTradeInput } from '../schemas/quick-trade.schema'
 import { addQuickTrade } from '../actions'
+import { ScreenshotPicker } from './screenshot-picker'
 import type { Trade } from '../types'
 
 interface QuickPnlFormProps {
@@ -35,6 +36,8 @@ export function QuickPnlForm({ accountId, date, onSuccess }: QuickPnlFormProps) 
   })
 
   const result = watch('result')
+  const screenshotPath = watch('screenshotPath')
+  const screenshotUrl = watch('screenshotUrl')
 
   const onSubmit = async (values: QuickTradeInput) => {
     const res = await addQuickTrade(values)
@@ -92,6 +95,14 @@ export function QuickPnlForm({ accountId, date, onSuccess }: QuickPnlFormProps) 
         </div>
         {errors.pnl && <p className="text-xs text-red">{errors.pnl.message}</p>}
       </div>
+
+      <ScreenshotPicker
+        value={screenshotPath && screenshotUrl ? { path: screenshotPath, url: screenshotUrl } : undefined}
+        onChange={(next) => {
+          setValue('screenshotPath', next?.path)
+          setValue('screenshotUrl', next?.url)
+        }}
+      />
 
       <Button
         type="submit"

@@ -33,6 +33,16 @@ export function TradeItem({ trade: t, onDelete, isDeleting }: TradeItemProps) {
       >
         {badge.label}
       </span>
+      {t.screenshotUrl && (
+        <a href={t.screenshotUrl} target="_blank" rel="noopener noreferrer" className="shrink-0">
+          {/* eslint-disable-next-line @next/next/no-img-element -- signed URL, expires in 1h; not a next/image candidate */}
+          <img
+            src={t.screenshotUrl}
+            alt="Trade screenshot"
+            className="size-7 rounded-md border border-line object-cover"
+          />
+        </a>
+      )}
       <div className="min-w-0 flex-1">
         {t.mode === 'calc' && t.entryPrice && t.exitPrice ? (
           <p className="truncate text-xs tabular-nums text-muted-foreground">
