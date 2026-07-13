@@ -45,6 +45,7 @@ export const addQuickTrade = withAuthAction(
           result: input.result,
           pnl,
           screenshotPath: input.screenshotPath ?? null,
+          note: input.note && input.note.trim().length > 0 ? input.note.trim() : null,
         })
         .returning()
       if (!inserted) return { error: 'Failed to save trade' }
@@ -82,6 +83,7 @@ export const addCalcTrade = withAuthAction(
         exitPrice: input.exitPrice,
         lotSize: input.lotSize,
         screenshotPath: input.screenshotPath ?? null,
+        note: input.note && input.note.trim().length > 0 ? input.note.trim() : null,
       })
       revalidatePath('/journal')
       revalidatePath('/accounts')

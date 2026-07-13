@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { formatPnl } from '@/lib/format'
 import { calcTradeSchema, type CalcTradeInput } from '../schemas/calc-trade.schema'
@@ -39,7 +40,7 @@ export function CalcForm({ accountId, date, onSuccess }: CalcFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<CalcTradeInput>({
     resolver: zodResolver(calcTradeSchema),
-    defaultValues: { accountId, date, direction: 'buy', entryPrice: '', exitPrice: '', lotSize: '' },
+    defaultValues: { accountId, date, direction: 'buy', entryPrice: '', exitPrice: '', lotSize: '', note: '' },
   })
 
   const [direction, entry, exit, lots] = watch(['direction', 'entryPrice', 'exitPrice', 'lotSize'])
@@ -61,7 +62,7 @@ export function CalcForm({ accountId, date, onSuccess }: CalcFormProps) {
       parseFloat(values.lotSize),
     )
     toast.success(`Trade logged · ${formatPnl(rawPnl, { showPlus: true })}`)
-    reset({ accountId, date, direction: 'buy', entryPrice: '', exitPrice: '', lotSize: '' })
+    reset({ accountId, date, direction: 'buy', entryPrice: '', exitPrice: '', lotSize: '', note: '' })
     onSuccess?.()
   }
 
@@ -119,6 +120,18 @@ export function CalcForm({ accountId, date, onSuccess }: CalcFormProps) {
         )}
       >
         {previewPnl === null ? 'P&L —' : formatPnl(previewPnl, { showPlus: true })}
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="note">Note (optional)</Label>
+        <Textarea
+          id="note"
+          rows={2}
+          placeholder="What's your read on this trade?"
+          className="resize-none text-sm"
+          {...register('note')}
+        />
+        {errors.note && <p className="text-xs text-red">{errors.note.message}</p>}
       </div>
 
       <ScreenshotPicker

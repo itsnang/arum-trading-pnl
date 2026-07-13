@@ -13,6 +13,7 @@ export const quickTradeSchema = z.object({
     ),
   screenshotPath: z.string().optional(),
   screenshotUrl: z.string().optional(),
+  note: z.string().max(500, 'Keep it under 500 characters').optional(),
 })
 
 export type QuickTradeInput = z.infer<typeof quickTradeSchema>

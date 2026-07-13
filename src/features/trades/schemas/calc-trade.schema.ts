@@ -18,6 +18,7 @@ export const calcTradeSchema = z.object({
   lotSize: positiveNumStr('lot size'),
   screenshotPath: z.string().optional(),
   screenshotUrl: z.string().optional(),
+  note: z.string().max(500, 'Keep it under 500 characters').optional(),
 })
 
 export type CalcTradeInput = z.infer<typeof calcTradeSchema>
