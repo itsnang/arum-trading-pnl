@@ -31,7 +31,7 @@ export function AccountsScreen() {
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pb-3 pt-12">
+      <div className="flex items-center justify-between px-5 pb-3 pt-8">
         <div>
           <h1 className="text-xl font-extrabold">Accounts</h1>
           <p className="text-xs text-muted-foreground">
