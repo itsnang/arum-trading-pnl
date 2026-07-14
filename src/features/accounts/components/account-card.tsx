@@ -1,18 +1,21 @@
 'use client'
 
 import { useState } from 'react'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Archive, MoreHorizontal, Pencil, Wallet } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatBalance, formatPnl } from '@/lib/format'
+import { Separator } from '@/components/ui/separator'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { AccountSheet } from './account-sheet'
-import { DeleteAccountAlert } from './delete-account-alert'
-import type { AccountWithStats, AccountType } from '../types'
-
-const typeBadge: Record<AccountType, { label: string; className: string }> = {
-  personal: { label: 'Personal', className: 'bg-green/10 text-green' },
-  funded: { label: 'Funded', className: 'bg-clay/10 text-clay' },
-  demo: { label: 'Demo', className: 'bg-hair text-muted-foreground' },
-}
+import { ArchiveAccountAlert } from './archive-account-alert'
+import { DepositSheet } from './deposit-sheet'
+import { typeBadge } from '../utils'
+import type { AccountWithStats } from '../types'
 
 interface AccountCardProps {
   account: AccountWithStats
@@ -26,7 +29,8 @@ export function AccountCard({ account, isSelected, onSelect }: AccountCardProps)
   const isPositive = pnl >= 0
   const initial = account.name.charAt(0).toUpperCase()
   const [editOpen, setEditOpen] = useState(false)
-  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [archiveOpen, setArchiveOpen] = useState(false)
+  const [depositOpen, setDepositOpen] = useState(false)
 
   return (
     <>
@@ -41,11 +45,12 @@ export function AccountCard({ account, isSelected, onSelect }: AccountCardProps)
           }
         }}
         className={cn(
-          'flex flex-col gap-2.75 rounded-xl border-[1.5px] bg-card px-3.75 py-3.75 text-left transition-colors',
+          'flex flex-col rounded-xl border-[1.5px] bg-card text-left transition-colors',
           isSelected ? 'border-clay' : 'border-line',
         )}
       >
-        <div className="flex items-center gap-2.75">
+        {/* Header row */}
+        <div className="flex items-center gap-2.5 px-4 pt-4 pb-3">
           <div
             className={cn(
               'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-base font-extrabold',
@@ -68,32 +73,39 @@ export function AccountCard({ account, isSelected, onSelect }: AccountCardProps)
           >
             {badge.label}
           </span>
-          <div className="flex shrink-0 items-center gap-0.5">
-            <button
-              type="button"
-              aria-label="Edit account"
-              onClick={(e) => {
-                e.stopPropagation()
-                setEditOpen(true)
-              }}
-              className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-hair hover:text-foreground active:scale-90"
-            >
-              <Pencil size={14} />
-            </button>
-            <button
-              type="button"
-              aria-label="Delete account"
-              onClick={(e) => {
-                e.stopPropagation()
-                setDeleteOpen(true)
-              }}
-              className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-red/10 hover:text-red active:scale-90"
-            >
-              <Trash2 size={14} />
-            </button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                aria-label="Account actions"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
+                className="shrink-0 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-hair hover:text-foreground active:scale-90"
+              >
+                <MoreHorizontal size={15} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => setDepositOpen(true)}>
+                <Wallet size={14} />
+                Add deposit
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+                <Pencil size={14} />
+                Edit account
+              </DropdownMenuItem>
+              <DropdownMenuItem variant="destructive" onSelect={() => setArchiveOpen(true)}>
+                <Archive size={14} />
+                Archive account
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <div className="flex items-baseline justify-between gap-2">
+
+        <Separator />
+
+        {/* Balance / P&L row */}
+        <div className="flex items-baseline justify-between gap-2 px-4 pt-3 pb-4">
           <div className="flex flex-col gap-px">
             <span className="text-[10.5px] font-semibold text-muted-foreground">Balance</span>
             <span className="text-[17px] font-extrabold tracking-tight tabular-nums">
@@ -114,8 +126,10 @@ export function AccountCard({ account, isSelected, onSelect }: AccountCardProps)
             </span>
           </div>
         </div>
+
+        {/* Active indicator */}
         {isSelected && (
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 border-t border-clay/20 px-4 py-2.5">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-clay" />
             <span className="text-xs font-semibold text-clay">
               Active — journal logs to this account
@@ -124,7 +138,8 @@ export function AccountCard({ account, isSelected, onSelect }: AccountCardProps)
         )}
       </div>
       <AccountSheet account={account} open={editOpen} onClose={() => setEditOpen(false)} />
-      <DeleteAccountAlert account={account} open={deleteOpen} onClose={() => setDeleteOpen(false)} />
+      <ArchiveAccountAlert account={account} open={archiveOpen} onClose={() => setArchiveOpen(false)} />
+      <DepositSheet accountId={account.id} open={depositOpen} onClose={() => setDepositOpen(false)} />
     </>
   )
 }

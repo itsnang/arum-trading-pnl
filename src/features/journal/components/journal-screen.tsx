@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { shiftMonth, formatMonthLabel } from '@/lib/format'
 import { ThemeToggle } from '@/components/shared/theme-toggle'
+import { UserAvatar } from '@/components/shared/user-avatar'
 import { useMonthJournal } from '../hooks/use-month-journal'
 import { MonthNav } from './month-nav'
 import { MonthHero } from './month-hero'
@@ -18,7 +19,9 @@ interface JournalScreenProps {
   onMonthChange: (month: string) => void
   onDayPress: (date: string) => void
   accounts: AccountWithStatsLike[]
+  user: { name: string; image: string | null }
 }
+
 
 export function JournalScreen({
   accountId,
@@ -27,6 +30,7 @@ export function JournalScreen({
   onMonthChange,
   onDayPress,
   accounts,
+  user,
 }: JournalScreenProps) {
   const effectiveAccountId = accountId ?? ''
 
@@ -48,19 +52,25 @@ export function JournalScreen({
 
   return (
     <div className="flex flex-col">
-      {/* Header — spans full width above both columns, so the calendar and
-          the side panel below start level with each other. */}
-      <div className="flex items-center justify-between gap-2 px-5 pt-12 pb-2">
-        <div>
-          <h1 className="text-xl font-extrabold">Journal</h1>
-          <p className="text-xs text-muted-foreground">XAU/USD · {formatMonthLabel(month)}</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <div className="px-5 pt-8 pb-2">
+        <div className="flex items-center justify-between pb-3">
+          <div className="flex items-center gap-2">
+            <UserAvatar name={user.name} image={user.image} size={28} />
+            <span className="text-sm font-semibold text-muted-foreground">
+              Hi, {user.name.split(' ')[0]}
+            </span>
+          </div>
           <ThemeToggle />
+        </div>
+        <div className="flex items-end justify-between gap-2">
+          <div>
+            <h1 className="text-xl font-extrabold">Journal</h1>
+            <p className="text-xs text-muted-foreground">XAU/USD · {formatMonthLabel(month)}</p>
+          </div>
           {activeAccount && (
             <Link
               href="/accounts"
-              className="flex items-center gap-1.5 rounded-full border border-line bg-card px-3 py-2 text-xs font-semibold"
+              className="flex items-center gap-1.5 rounded-xl border border-line bg-card px-3 py-2 text-xs font-semibold"
             >
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-clay" />
               <span className="max-w-24 truncate">{activeAccount.name}</span>

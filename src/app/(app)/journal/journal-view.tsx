@@ -10,9 +10,10 @@ interface JournalViewProps {
   defaultAccountId: string | null
   defaultMonth: string
   accounts: AccountWithStatsLike[]
+  user: { name: string; image: string | null }
 }
 
-export function JournalView({ defaultAccountId, defaultMonth, accounts }: JournalViewProps) {
+export function JournalView({ defaultAccountId, defaultMonth, accounts, user }: JournalViewProps) {
   const [month, setMonth] = useState(defaultMonth)
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
   const selectedAccountId = useSelectedAccountStore((s) => s.selectedAccountId)
@@ -31,6 +32,7 @@ export function JournalView({ defaultAccountId, defaultMonth, accounts }: Journa
         onMonthChange={setMonth}
         onDayPress={(date) => setSelectedDay(date)}
         accounts={accounts}
+        user={user}
       />
       <DayDialog
         open={!!selectedDay}

@@ -8,15 +8,15 @@ import { OnboardingGate } from './onboarding-gate'
 import { PrefetchController } from './prefetch-controller'
 import { AccountSelectionSync } from './account-selection-sync'
 
-// The accounts query is hydrated *here*, above OnboardingGate/PrefetchController
-// and the page itself — all of which read it via useAccounts(). TanStack
-// Query's HydrationBoundary only hydrates synchronously (during SSR) the
-// first time a query key is touched; if a sibling calls useAccounts() first,
-// hydration for that key gets deferred to a client-only effect that never
-// runs during SSR, so the server-rendered HTML is stuck showing empty data.
-// Hydrating once at this shared ancestor removes the race entirely.
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  await requireSession()
+  const { user } = await requireSession()
+  // The accounts query is hydrated *here*, above OnboardingGate/PrefetchController
+  // and the page itself — all of which read it via useAccounts(). TanStack
+  // Query's HydrationBoundary only hydrates synchronously (during SSR) the
+  // first time a query key is touched; if a sibling calls useAccounts() first,
+  // hydration for that key gets deferred to a client-only effect that never
+  // runs during SSR, so the server-rendered HTML is stuck showing empty data.
+  // Hydrating once at this shared ancestor removes the race entirely.
   const queryClient = getQueryClient()
   await queryClient.prefetchQuery(accountsQueryOptions())
 

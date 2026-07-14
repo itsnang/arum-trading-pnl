@@ -5,10 +5,10 @@ import type { StorageAdapter } from './types'
 export class SupabaseStorageAdapter implements StorageAdapter {
   constructor(private readonly bucket: string) {}
 
-  async upload(path: string, file: File, contentType: string): Promise<{ path: string }> {
+  async upload(path: string, file: File, contentType: string, options?: { upsert?: boolean }): Promise<{ path: string }> {
     const { data, error } = await supabaseStorageClient.storage
       .from(this.bucket)
-      .upload(path, file, { contentType, upsert: false })
+      .upload(path, file, { contentType, upsert: options?.upsert ?? false })
     if (error || !data) throw new Error(`Storage upload failed: ${error?.message ?? 'unknown error'}`)
     return { path: data.path }
   }
@@ -19,6 +19,14 @@ export class SupabaseStorageAdapter implements StorageAdapter {
       .createSignedUrl(path, expiresInSeconds)
     if (error || !data) throw new Error(`Storage signed URL failed: ${error?.message ?? 'unknown error'}`)
     return data.signedUrl
+  }
+
+  getPublicUrl(path: string): string {
+    const { data } = supabaseStorageClient.storage
+      .from(this.bucket)
+      .getPublicUrl(path)
+    if (!data.publicUrl) throw new Error('Storage public URL failed: missing URL')
+    return data.publicUrl
   }
 
   async delete(path: string): Promise<void> {

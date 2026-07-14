@@ -17,7 +17,7 @@ export function HeroCard({ label, value, trailing, compact, className }: HeroCar
     <div
       className={cn(
         'relative overflow-hidden rounded-xl bg-hero-bg text-hero-fg',
-        compact ? 'px-3.5 py-3.5' : 'mx-5 mb-4 px-5 py-5',
+        compact ? 'px-4 py-4' : 'mx-5 mb-4 px-5 py-5',
         className,
       )}
     >

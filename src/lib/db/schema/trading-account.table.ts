@@ -14,6 +14,7 @@ export const tradingAccount = pgTable(
     broker: text('broker'),
     type: accountTypeEnum('type').notNull().default('personal'),
     startingBalance: numeric('starting_balance', { precision: 15, scale: 2 }).notNull(),
+    archivedAt: timestamp('archived_at'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },

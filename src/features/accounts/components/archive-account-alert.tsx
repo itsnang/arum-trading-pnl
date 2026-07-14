@@ -13,44 +13,41 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { queryKeys } from '@/lib/query-keys'
-import { deleteAccount } from '../actions'
+import { archiveAccount } from '../actions'
 import type { AccountWithStats } from '../types'
 
-interface DeleteAccountAlertProps {
+interface ArchiveAccountAlertProps {
   account: AccountWithStats
   open: boolean
   onClose: () => void
 }
 
-export function DeleteAccountAlert({ account, open, onClose }: DeleteAccountAlertProps) {
+export function ArchiveAccountAlert({ account, open, onClose }: ArchiveAccountAlertProps) {
   const queryClient = useQueryClient()
 
-  const handleDelete = async () => {
-    const result = await deleteAccount(account.id)
+  const handleArchive = async () => {
+    const result = await archiveAccount(account.id)
     if (result.error) {
       toast.error(result.error)
       return
     }
     await queryClient.invalidateQueries({ queryKey: queryKeys.accounts() })
-    toast.success('Account deleted')
+    toast.success('Account archived')
   }
 
   return (
     <AlertDialog open={open} onOpenChange={(next) => !next && onClose()}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete {account.name}?</AlertDialogTitle>
+          <AlertDialogTitle>Archive {account.name}?</AlertDialogTitle>
           <AlertDialogDescription>
-            {account.tradeCount > 0
-              ? `This permanently deletes the account and its ${account.tradeCount} logged trade${account.tradeCount !== 1 ? 's' : ''}. This can't be undone.`
-              : "This permanently deletes the account. This can't be undone."}
+            This hides the account and its trades from your list. You can restore it anytime
+            from Archived accounts.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={handleDelete}>
-            Delete
-          </AlertDialogAction>
+          <AlertDialogAction onClick={handleArchive}>Archive</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

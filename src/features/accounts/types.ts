@@ -7,6 +7,7 @@ export interface TradingAccount {
   broker: string | null
   type: AccountType
   startingBalance: string
+  archivedAt: Date | null
   createdAt: Date
   updatedAt: Date
 }
@@ -14,6 +15,7 @@ export interface TradingAccount {
 export interface AccountWithStats extends TradingAccount {
   currentBalance: string
   totalPnl: string
+  totalDeposits: string
   tradeCount: number
   isActive: boolean
 }

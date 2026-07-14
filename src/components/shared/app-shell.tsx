@@ -7,12 +7,16 @@ import { cn } from '@/lib/utils'
 import { signOut } from '@/lib/better-auth/client'
 import { AppLogo } from './app-logo'
 
+interface AppShellProps {
+  children: React.ReactNode
+}
+
 const tabs = [
   { href: '/journal', label: 'Journal', icon: CalendarDays },
   { href: '/accounts', label: 'Accounts', icon: Wallet },
-]
+] as const
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname()
   const router = useRouter()
 
