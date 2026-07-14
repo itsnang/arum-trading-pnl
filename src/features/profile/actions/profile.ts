@@ -6,7 +6,6 @@ import { withAuthAction } from '@/lib/better-auth/middleware'
 import { auth } from '@/lib/better-auth/server'
 import { storageAdapter } from '@/lib/storage'
 import { ALLOWED_UPLOAD_MIME_TYPES, MAX_UPLOAD_BYTES, STORAGE_BUCKET } from '@/lib/storage/constants'
-import { env } from '@/env'
 import { editProfileSchema } from '../schemas'
 
 export const uploadAvatar = withAuthAction(
@@ -26,7 +25,9 @@ export const uploadAvatar = withAuthAction(
 
     try {
       await storageAdapter.upload(path, file, file.type, { upsert: true })
-      const url = `${storageAdapter.getPublicUrl(path)}?t=${Date.now()}`
+      // Use a 10-year signed URL so the avatar persists without expiry concerns
+      // while keeping the bucket private (trade screenshots share the same bucket).
+      const url = await storageAdapter.getSignedUrl(path, 60 * 60 * 24 * 365 * 10)
       return { url }
     } catch {
       return { error: 'Failed to upload avatar' }
@@ -43,11 +44,11 @@ export const updateProfile = withAuthAction(
       return { error: firstError?.message ?? 'Invalid name' }
     }
 
-    // If an image URL is provided, ensure it belongs to this user's avatar path
-    // in our own storage bucket — prevents arbitrary URL injection.
+    // Validate the image URL belongs to this user's avatar path in our bucket —
+    // prevents arbitrary URL injection. Signed URLs contain the path as a segment.
     if (image !== undefined) {
-      const expectedPrefix = `${env.SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/avatars/${user.id}/`
-      if (!image.startsWith(expectedPrefix)) {
+      const expectedPathSegment = `/object/sign/${STORAGE_BUCKET}/avatars/${user.id}/`
+      if (!image.includes(expectedPathSegment)) {
         return { error: 'Invalid avatar URL' }
       }
     }
