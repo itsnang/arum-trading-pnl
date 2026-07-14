@@ -50,7 +50,7 @@ export function JournalScreen({
     <div className="flex flex-col">
       {/* Header — spans full width above both columns, so the calendar and
           the side panel below start level with each other. */}
-      <div className="flex items-center justify-between gap-2 px-5 pt-12 pb-2">
+      <div className="flex items-center justify-between gap-2 px-5 pt-8 pb-2">
         <div>
           <h1 className="text-xl font-extrabold">Journal</h1>
           <p className="text-xs text-muted-foreground">XAU/USD · {formatMonthLabel(month)}</p>
@@ -60,7 +60,7 @@ export function JournalScreen({
           {activeAccount && (
             <Link
               href="/accounts"
-              className="flex items-center gap-1.5 rounded-full border border-line bg-card px-3 py-2 text-xs font-semibold"
+              className="flex items-center gap-1.5 rounded-xl border border-line bg-card px-3 py-2 text-xs font-semibold"
             >
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-clay" />
               <span className="max-w-24 truncate">{activeAccount.name}</span>
