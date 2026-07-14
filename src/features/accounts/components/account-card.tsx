@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2, Wallet } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatBalance, formatPnl } from '@/lib/format'
 import { AccountSheet } from './account-sheet'
 import { DeleteAccountAlert } from './delete-account-alert'
+import { DepositSheet } from './deposit-sheet'
 import type { AccountWithStats, AccountType } from '../types'
 
 const typeBadge: Record<AccountType, { label: string; className: string }> = {
@@ -27,6 +28,7 @@ export function AccountCard({ account, isSelected, onSelect }: AccountCardProps)
   const initial = account.name.charAt(0).toUpperCase()
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [depositOpen, setDepositOpen] = useState(false)
 
   return (
     <>
@@ -69,6 +71,17 @@ export function AccountCard({ account, isSelected, onSelect }: AccountCardProps)
             {badge.label}
           </span>
           <div className="flex shrink-0 items-center gap-0.5">
+            <button
+              type="button"
+              aria-label="Add deposit"
+              onClick={(e) => {
+                e.stopPropagation()
+                setDepositOpen(true)
+              }}
+              className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-green/10 hover:text-green active:scale-90"
+            >
+              <Wallet size={14} />
+            </button>
             <button
               type="button"
               aria-label="Edit account"
@@ -125,6 +138,7 @@ export function AccountCard({ account, isSelected, onSelect }: AccountCardProps)
       </div>
       <AccountSheet account={account} open={editOpen} onClose={() => setEditOpen(false)} />
       <DeleteAccountAlert account={account} open={deleteOpen} onClose={() => setDeleteOpen(false)} />
+      <DepositSheet accountId={account.id} open={depositOpen} onClose={() => setDepositOpen(false)} />
     </>
   )
 }

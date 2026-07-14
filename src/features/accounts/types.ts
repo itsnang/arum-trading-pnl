@@ -14,6 +14,7 @@ export interface TradingAccount {
 export interface AccountWithStats extends TradingAccount {
   currentBalance: string
   totalPnl: string
+  totalDeposits: string
   tradeCount: number
   isActive: boolean
 }
