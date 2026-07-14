@@ -5,10 +5,10 @@ import type { StorageAdapter } from './types'
 export class SupabaseStorageAdapter implements StorageAdapter {
   constructor(private readonly bucket: string) {}
 
-  async upload(path: string, file: File, contentType: string): Promise<{ path: string }> {
+  async upload(path: string, file: File, contentType: string, options?: { upsert?: boolean }): Promise<{ path: string }> {
     const { data, error } = await supabaseStorageClient.storage
       .from(this.bucket)
-      .upload(path, file, { contentType, upsert: false })
+      .upload(path, file, { contentType, upsert: options?.upsert ?? false })
     if (error || !data) throw new Error(`Storage upload failed: ${error?.message ?? 'unknown error'}`)
     return { path: data.path }
   }

@@ -24,12 +24,9 @@ export const uploadAvatar = withAuthAction(
 
     const path = `avatars/${user.id}/avatar.${ext}`
 
-    // Delete the old avatar (ignore errors — it may not exist yet)
-    await storageAdapter.delete(path).catch(() => undefined)
-
     try {
-      await storageAdapter.upload(path, file, file.type)
-      const url = storageAdapter.getPublicUrl(path)
+      await storageAdapter.upload(path, file, file.type, { upsert: true })
+      const url = `${storageAdapter.getPublicUrl(path)}?t=${Date.now()}`
       return { url }
     } catch {
       return { error: 'Failed to upload avatar' }
