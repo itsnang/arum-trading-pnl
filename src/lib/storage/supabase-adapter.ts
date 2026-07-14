@@ -25,6 +25,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     const { data } = supabaseStorageClient.storage
       .from(this.bucket)
       .getPublicUrl(path)
+    if (!data.publicUrl) throw new Error('Storage public URL failed: missing URL')
     return data.publicUrl
   }
 
