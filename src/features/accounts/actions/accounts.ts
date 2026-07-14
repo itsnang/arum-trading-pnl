@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { and, desc, eq, getTableColumns, sql } from 'drizzle-orm'
+import { and, desc, eq, getTableColumns, isNotNull, isNull, sql } from 'drizzle-orm'
 import { db } from '@/lib/db/client'
 import { tradingAccount } from '@/lib/db/schema/trading-account.table'
 import { trade } from '@/lib/db/schema/trade.table'
@@ -9,15 +9,16 @@ import { deposit } from '@/lib/db/schema/deposit.table'
 import { withAuthAction } from '@/lib/better-auth/middleware'
 import type { AddAccountInput } from '../schemas'
 
-export const getAccountsWithStats = withAuthAction(async ({ user }) => {
+// Shared by getAccountsWithStats/getArchivedAccountsWithStats — trade and
+// deposit are both one-to-many against tradingAccount, so each is
+// pre-aggregated to one row per accountId in its own subquery before being
+// joined — joining both un-aggregated tables into a single GROUP BY would
+// fan out and multiply the sums.
+async function fetchAccountsWithStats(userId: string, archived: boolean) {
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
   const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().slice(0, 10)
 
-  // trade and deposit are both one-to-many against tradingAccount, so each is
-  // pre-aggregated to one row per accountId in its own subquery before being
-  // joined — joining both un-aggregated tables into a single GROUP BY would
-  // fan out and multiply the sums.
   const tradeStats = db
     .select({
       accountId: trade.accountId,
@@ -28,7 +29,7 @@ export const getAccountsWithStats = withAuthAction(async ({ user }) => {
       ),
     })
     .from(trade)
-    .where(eq(trade.userId, user.id))
+    .where(eq(trade.userId, userId))
     .groupBy(trade.accountId)
     .as('trade_stats')
 
@@ -38,7 +39,7 @@ export const getAccountsWithStats = withAuthAction(async ({ user }) => {
       totalDeposits: sql<string>`COALESCE(SUM(${deposit.amount}), 0)`.as('total_deposits'),
     })
     .from(deposit)
-    .where(eq(deposit.userId, user.id))
+    .where(eq(deposit.userId, userId))
     .groupBy(deposit.accountId)
     .as('deposit_stats')
 
@@ -53,8 +54,13 @@ export const getAccountsWithStats = withAuthAction(async ({ user }) => {
     .from(tradingAccount)
     .leftJoin(tradeStats, eq(tradeStats.accountId, tradingAccount.id))
     .leftJoin(depositStats, eq(depositStats.accountId, tradingAccount.id))
-    .where(eq(tradingAccount.userId, user.id))
-    .orderBy(desc(tradingAccount.createdAt))
+    .where(
+      and(
+        eq(tradingAccount.userId, userId),
+        archived ? isNotNull(tradingAccount.archivedAt) : isNull(tradingAccount.archivedAt),
+      ),
+    )
+    .orderBy(archived ? desc(tradingAccount.archivedAt) : desc(tradingAccount.createdAt))
 
   return rows.map((row) => {
     const currentBalance = (
@@ -68,7 +74,13 @@ export const getAccountsWithStats = withAuthAction(async ({ user }) => {
       isActive: parseInt(row.recentCount) > 0,
     }
   })
-})
+}
+
+export const getAccountsWithStats = withAuthAction(({ user }) => fetchAccountsWithStats(user.id, false))
+
+export const getArchivedAccountsWithStats = withAuthAction(({ user }) =>
+  fetchAccountsWithStats(user.id, true),
+)
 
 export const addAccount = withAuthAction(
   async ({ user }, input: AddAccountInput): Promise<{ error?: string }> => {
@@ -118,17 +130,50 @@ export const updateAccount = withAuthAction(
   },
 )
 
-export const deleteAccount = withAuthAction(
+export const archiveAccount = withAuthAction(
   async ({ user }, accountId: string): Promise<{ error?: string }> => {
     try {
-      await db
-        .delete(tradingAccount)
-        .where(and(eq(tradingAccount.id, accountId), eq(tradingAccount.userId, user.id)))
+      const [updated] = await db
+        .update(tradingAccount)
+        .set({ archivedAt: new Date(), updatedAt: new Date() })
+        .where(
+          and(
+            eq(tradingAccount.id, accountId),
+            eq(tradingAccount.userId, user.id),
+            isNull(tradingAccount.archivedAt),
+          ),
+        )
+        .returning({ id: tradingAccount.id })
+      if (!updated) return { error: 'Account not found' }
       revalidatePath('/accounts')
       revalidatePath('/journal')
       return {}
     } catch {
-      return { error: 'Failed to delete account' }
+      return { error: 'Failed to archive account' }
+    }
+  },
+)
+
+export const restoreAccount = withAuthAction(
+  async ({ user }, accountId: string): Promise<{ error?: string }> => {
+    try {
+      const [updated] = await db
+        .update(tradingAccount)
+        .set({ archivedAt: null, updatedAt: new Date() })
+        .where(
+          and(
+            eq(tradingAccount.id, accountId),
+            eq(tradingAccount.userId, user.id),
+            isNotNull(tradingAccount.archivedAt),
+          ),
+        )
+        .returning({ id: tradingAccount.id })
+      if (!updated) return { error: 'Account not found' }
+      revalidatePath('/accounts')
+      revalidatePath('/journal')
+      return {}
+    } catch {
+      return { error: 'Failed to restore account' }
     }
   },
 )

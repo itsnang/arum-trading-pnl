@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus } from 'lucide-react'
+import { Archive, Plus } from 'lucide-react'
 import { signOut } from '@/lib/better-auth/client'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -13,11 +13,13 @@ import { groupTotalsByType } from '../utils'
 import { AccountTypeTotals } from './account-type-totals'
 import { AccountCard } from './account-card'
 import { AccountSheet } from './account-sheet'
+import { ArchivedAccountsSheet } from './archived-accounts-sheet'
 
 export function AccountsScreen() {
   const router = useRouter()
   const { data: accounts = [] } = useAccounts()
   const [addOpen, setAddOpen] = useState(false)
+  const [archivedOpen, setArchivedOpen] = useState(false)
   const { selectedAccountId, setSelectedAccountId } = useSelectedAccountStore()
 
   const typeTotals = groupTotalsByType(accounts)
@@ -38,6 +40,14 @@ export function AccountsScreen() {
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          <button
+            type="button"
+            aria-label="View archived accounts"
+            onClick={() => setArchivedOpen(true)}
+            className="flex items-center justify-center rounded-xl p-2 text-muted-foreground transition-colors hover:bg-hair hover:text-foreground active:scale-90"
+          >
+            <Archive size={16} />
+          </button>
           <button
             type="button"
             onClick={() => setAddOpen(true)}
@@ -82,6 +92,7 @@ export function AccountsScreen() {
       </div>
 
       <AccountSheet open={addOpen} onClose={() => setAddOpen(false)} />
+      <ArchivedAccountsSheet open={archivedOpen} onClose={() => setArchivedOpen(false)} />
     </div>
   )
 }

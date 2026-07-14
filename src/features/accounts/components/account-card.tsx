@@ -1,19 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Pencil, Trash2, Wallet } from 'lucide-react'
+import { Archive, Pencil, Wallet } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatBalance, formatPnl } from '@/lib/format'
 import { AccountSheet } from './account-sheet'
-import { DeleteAccountAlert } from './delete-account-alert'
+import { ArchiveAccountAlert } from './archive-account-alert'
 import { DepositSheet } from './deposit-sheet'
-import type { AccountWithStats, AccountType } from '../types'
-
-const typeBadge: Record<AccountType, { label: string; className: string }> = {
-  personal: { label: 'Personal', className: 'bg-green/10 text-green' },
-  funded: { label: 'Funded', className: 'bg-clay/10 text-clay' },
-  demo: { label: 'Demo', className: 'bg-hair text-muted-foreground' },
-}
+import { typeBadge } from '../utils'
+import type { AccountWithStats } from '../types'
 
 interface AccountCardProps {
   account: AccountWithStats
@@ -27,7 +22,7 @@ export function AccountCard({ account, isSelected, onSelect }: AccountCardProps)
   const isPositive = pnl >= 0
   const initial = account.name.charAt(0).toUpperCase()
   const [editOpen, setEditOpen] = useState(false)
-  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [archiveOpen, setArchiveOpen] = useState(false)
   const [depositOpen, setDepositOpen] = useState(false)
 
   return (
@@ -95,14 +90,14 @@ export function AccountCard({ account, isSelected, onSelect }: AccountCardProps)
             </button>
             <button
               type="button"
-              aria-label="Delete account"
+              aria-label="Archive account"
               onClick={(e) => {
                 e.stopPropagation()
-                setDeleteOpen(true)
+                setArchiveOpen(true)
               }}
-              className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-red/10 hover:text-red active:scale-90"
+              className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-hair hover:text-foreground active:scale-90"
             >
-              <Trash2 size={14} />
+              <Archive size={14} />
             </button>
           </div>
         </div>
@@ -137,7 +132,7 @@ export function AccountCard({ account, isSelected, onSelect }: AccountCardProps)
         )}
       </div>
       <AccountSheet account={account} open={editOpen} onClose={() => setEditOpen(false)} />
-      <DeleteAccountAlert account={account} open={deleteOpen} onClose={() => setDeleteOpen(false)} />
+      <ArchiveAccountAlert account={account} open={archiveOpen} onClose={() => setArchiveOpen(false)} />
       <DepositSheet accountId={account.id} open={depositOpen} onClose={() => setDepositOpen(false)} />
     </>
   )

@@ -43,6 +43,13 @@
       "when": 1784034875564,
       "tag": "0005_daily_amazoness",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784035777263,
+      "tag": "0006_steep_ezekiel",
+      "breakpoints": true
     }
   ]
 }

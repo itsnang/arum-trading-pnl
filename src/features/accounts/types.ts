@@ -7,6 +7,7 @@ export interface TradingAccount {
   broker: string | null
   type: AccountType
   startingBalance: string
+  archivedAt: Date | null
   createdAt: Date
   updatedAt: Date
 }
