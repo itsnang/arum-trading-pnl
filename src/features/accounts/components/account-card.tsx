@@ -78,31 +78,23 @@ export function AccountCard({ account, isSelected, onSelect }: AccountCardProps)
               <button
                 type="button"
                 aria-label="Account actions"
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => e.stopPropagation()}
                 className="shrink-0 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-hair hover:text-foreground active:scale-90"
               >
                 <MoreHorizontal size={15} />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-              <DropdownMenuItem
-                onSelect={() => setDepositOpen(true)}
-                className="gap-2"
-              >
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => setDepositOpen(true)}>
                 <Wallet size={14} />
                 Add deposit
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => setEditOpen(true)}
-                className="gap-2"
-              >
+              <DropdownMenuItem onSelect={() => setEditOpen(true)}>
                 <Pencil size={14} />
                 Edit account
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => setArchiveOpen(true)}
-                className="gap-2 text-destructive focus:text-destructive"
-              >
+              <DropdownMenuItem variant="destructive" onSelect={() => setArchiveOpen(true)}>
                 <Archive size={14} />
                 Archive account
               </DropdownMenuItem>
