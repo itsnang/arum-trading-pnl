@@ -5,7 +5,9 @@ import { revalidatePath } from 'next/cache'
 import { withAuthAction } from '@/lib/better-auth/middleware'
 import { auth } from '@/lib/better-auth/server'
 import { storageAdapter } from '@/lib/storage'
-import { ALLOWED_UPLOAD_MIME_TYPES, MAX_UPLOAD_BYTES } from '@/lib/storage/constants'
+import { ALLOWED_UPLOAD_MIME_TYPES, MAX_UPLOAD_BYTES, STORAGE_BUCKET } from '@/lib/storage/constants'
+import { env } from '@/env'
+import { editProfileSchema } from '../schemas'
 
 export const uploadAvatar = withAuthAction(
   async ({ user }, formData: FormData): Promise<{ error?: string; url?: string }> => {
@@ -36,11 +38,27 @@ export const uploadAvatar = withAuthAction(
 )
 
 export const updateProfile = withAuthAction(
-  async (_session, { name, image }: { name: string; image?: string }): Promise<{ error?: string }> => {
+  async ({ user }, { name, image }: { name: string; image?: string }): Promise<{ error?: string }> => {
+    // Validate name with schema
+    const parsed = editProfileSchema.safeParse({ name })
+    if (!parsed.success) {
+      const firstError = parsed.error.issues[0]
+      return { error: firstError?.message ?? 'Invalid name' }
+    }
+
+    // If an image URL is provided, ensure it belongs to this user's avatar path
+    // in our own storage bucket — prevents arbitrary URL injection.
+    if (image !== undefined) {
+      const expectedPrefix = `${env.SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/avatars/${user.id}/`
+      if (!image.startsWith(expectedPrefix)) {
+        return { error: 'Invalid avatar URL' }
+      }
+    }
+
     try {
       await auth.api.updateUser({
         headers: await headers(),
-        body: { name, ...(image !== undefined && { image }) },
+        body: { name: parsed.data.name, ...(image !== undefined && { image }) },
       })
       revalidatePath('/', 'layout')
       return {}
