@@ -21,6 +21,13 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     return data.signedUrl
   }
 
+  getPublicUrl(path: string): string {
+    const { data } = supabaseStorageClient.storage
+      .from(this.bucket)
+      .getPublicUrl(path)
+    return data.publicUrl
+  }
+
   async delete(path: string): Promise<void> {
     const { error } = await supabaseStorageClient.storage.from(this.bucket).remove([path])
     if (error) throw new Error(`Storage delete failed: ${error.message}`)
