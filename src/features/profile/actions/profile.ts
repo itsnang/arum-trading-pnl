@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { withAuthAction } from '@/lib/better-auth/middleware'
 import { auth } from '@/lib/better-auth/server'
 import { storageAdapter } from '@/lib/storage'
-import { ALLOWED_UPLOAD_MIME_TYPES, MAX_UPLOAD_BYTES, STORAGE_BUCKET } from '@/lib/storage/constants'
+import { ALLOWED_UPLOAD_MIME_TYPES, AVATAR_SIGNED_URL_TTL_SECONDS, MAX_UPLOAD_BYTES, STORAGE_BUCKET } from '@/lib/storage/constants'
 import { editProfileSchema } from '../schemas'
 
 export const uploadAvatar = withAuthAction(
@@ -27,7 +27,7 @@ export const uploadAvatar = withAuthAction(
       await storageAdapter.upload(path, file, file.type, { upsert: true })
       // Use a 10-year signed URL so the avatar persists without expiry concerns
       // while keeping the bucket private (trade screenshots share the same bucket).
-      const url = await storageAdapter.getSignedUrl(path, 60 * 60 * 24 * 365 * 10)
+      const url = await storageAdapter.getSignedUrl(path, AVATAR_SIGNED_URL_TTL_SECONDS)
       return { url }
     } catch {
       return { error: 'Failed to upload avatar' }

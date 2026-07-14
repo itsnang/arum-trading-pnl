@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Pencil } from 'lucide-react'
 import { UserAvatar } from '@/components/shared/user-avatar'
 import { ProfileSheet } from '@/features/profile/components/profile-sheet'
@@ -12,11 +12,14 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
   const [editOpen, setEditOpen] = useState(false)
-  // Local state so UI updates immediately after save — the session cookie cache
-  // (maxAge: 60s) means requireSession() returns stale data for up to a minute,
-  // so we can't rely on router.refresh() alone to reflect the new name/image.
+  // Optimistic local state: update immediately on save so the UI doesn't wait
+  // for the 60s better-auth cookie cache to expire before reflecting changes.
   const [localName, setLocalName] = useState(user.name)
   const [localImage, setLocalImage] = useState(user.image)
+
+  // Sync when the server prop eventually catches up (cookie cache expires → router.refresh resolves)
+  useEffect(() => { setLocalName(user.name) }, [user.name])
+  useEffect(() => { setLocalImage(user.image) }, [user.image])
 
   return (
     <>
