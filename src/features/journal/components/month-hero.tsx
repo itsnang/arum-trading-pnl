@@ -35,7 +35,7 @@ export function MonthHero({ data, currentBalance }: MonthHeroProps) {
         {currentBalance !== undefined && (
           <div className="flex flex-col items-end gap-1.5">
             <p className="text-[10px] font-bold uppercase tracking-[0.12em] opacity-50">Balance</p>
-            <p className="text-base font-semibold tabular-nums opacity-75">
+            <p className="text-lg font-extrabold tabular-nums">
               ${formatBalance(currentBalance)}
             </p>
           </div>
