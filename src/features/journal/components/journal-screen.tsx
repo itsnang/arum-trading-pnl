@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { shiftMonth, formatMonthLabel } from '@/lib/format'
 import { ThemeToggle } from '@/components/shared/theme-toggle'
 import { UserAvatar } from '@/components/shared/user-avatar'
@@ -10,6 +11,7 @@ import { MonthNav } from './month-nav'
 import { MonthHero } from './month-hero'
 import { MonthCalendar } from './month-calendar'
 import { RecentDaysPanel } from './recent-days-panel'
+import { TourTooltip } from '@/components/shared/tour-tooltip'
 import type { AccountWithStatsLike } from '../types'
 
 interface JournalScreenProps {
@@ -70,6 +72,7 @@ export function JournalScreen({
           {activeAccount && (
             <Link
               href="/accounts"
+              data-tour="account-chip"
               className="flex items-center gap-1.5 rounded-xl border border-line bg-card px-3 py-2 text-xs font-semibold"
             >
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-clay" />
@@ -81,25 +84,49 @@ export function JournalScreen({
       </div>
 
       <div className="flex flex-col lg:flex-row lg:items-start">
-        <div className="flex-1 lg:min-w-0">
-          {/* Month navigation */}
-          <MonthNav
-            month={month}
-            onPrev={() => onMonthChange(shiftMonth(month, -1))}
-            onNext={() => onMonthChange(shiftMonth(month, 1))}
+        <motion.div
+          className="relative flex-1 lg:min-w-0"
+          onPanEnd={(_event, info) => {
+            const isHorizontal = Math.abs(info.offset.x) > Math.abs(info.offset.y) * 1.5
+            const isFastEnough = Math.abs(info.velocity.x) > 200 || Math.abs(info.offset.x) > 60
+            if (!isHorizontal || !isFastEnough) return
+            if (info.offset.x < 0) {
+              onMonthChange(shiftMonth(month, 1))
+            } else {
+              onMonthChange(shiftMonth(month, -1))
+            }
+          }}
+        >
+          <TourTooltip
+            storageKey="pipfolio_journal_tour"
+            steps={[
+              { target: 'account-chip', title: 'Switch account', body: 'Tap here to change your active trading account.', tipPosition: 'below' },
+              { target: 'month-nav', title: 'Navigate months', body: 'Tap the arrows or swipe left / right to browse months.', tipPosition: 'below' },
+              { target: 'calendar', title: 'Log a trade', body: 'Tap any day to record your P&L, add notes, and attach a screenshot.', tipPosition: 'above' },
+            ]}
           />
+          {/* Month navigation */}
+          <div data-tour="month-nav">
+            <MonthNav
+              month={month}
+              onPrev={() => onMonthChange(shiftMonth(month, -1))}
+              onNext={() => onMonthChange(shiftMonth(month, 1))}
+            />
+          </div>
 
           {/* Hero */}
           <MonthHero data={journalData} currentBalance={activeAccount?.currentBalance} />
 
           {/* Calendar */}
-          <MonthCalendar
-            month={month}
-            days={journalData.days}
-            selectedDate={selectedDate}
-            onDayPress={onDayPress}
-          />
-        </div>
+          <div data-tour="calendar">
+            <MonthCalendar
+              month={month}
+              days={journalData.days}
+              selectedDate={selectedDate}
+              onDayPress={onDayPress}
+            />
+          </div>
+        </motion.div>
 
         {/* Recent days — tablet/desktop only: stacked below the calendar at
             md, beside it at lg. Mobile already has per-day detail via the

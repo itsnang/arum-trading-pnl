@@ -29,6 +29,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
       <div className="flex items-center gap-4 px-5 pt-8 pb-5">
         <button
           type="button"
+          data-tour="profile-avatar"
           onClick={() => setEditOpen(true)}
           className="relative shrink-0 active:opacity-80"
         >
