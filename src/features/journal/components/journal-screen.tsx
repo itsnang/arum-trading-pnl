@@ -90,7 +90,7 @@ export function JournalScreen({
           />
 
           {/* Hero */}
-          <MonthHero data={journalData} />
+          <MonthHero data={journalData} currentBalance={activeAccount?.currentBalance} />
 
           {/* Calendar */}
           <MonthCalendar

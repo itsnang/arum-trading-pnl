@@ -23,7 +23,7 @@ export default async function JournalPage() {
       <JournalView
         defaultAccountId={firstAccount?.id ?? null}
         defaultMonth={month}
-        accounts={accounts.map(({ id, name }) => ({ id, name }))}
+        accounts={accounts.map(({ id, name, currentBalance }) => ({ id, name, currentBalance }))}
         user={{ name: user.name, image: user.image ?? null }}
       />
     </HydrationBoundary>

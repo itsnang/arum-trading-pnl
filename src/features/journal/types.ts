@@ -2,6 +2,7 @@
 export interface AccountWithStatsLike {
   id: string
   name: string
+  currentBalance: string
 }
 
 export interface DayStats {

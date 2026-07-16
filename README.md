@@ -7,7 +7,7 @@ types that don't belong together.
 
 <p align="center">
   <img src=".readme-assets/journal.png" alt="Journal — monthly calendar view" width="320" />
-  <img src=".readme-assets/accounts.png" alt="Accounts — per-type totals and account list" width="320" />
+  <img src=".readme-assets/accounts.png" alt="Accounts — profile header, per-type totals and account list" width="320" />
 </p>
 
 Tablet and desktop get a sidebar nav, a wider layout, and a "Recent days" panel next to the calendar:
@@ -16,7 +16,7 @@ Tablet and desktop get a sidebar nav, a wider layout, and a "Recent days" panel 
   <img src=".readme-assets/journal-desktop.png" alt="Journal on desktop — sidebar nav and Recent days side panel" width="700" />
 </p>
 <p align="center">
-  <img src=".readme-assets/accounts-desktop.png" alt="Accounts on desktop — sidebar nav and widened account grid" width="700" />
+  <img src=".readme-assets/accounts-desktop.png" alt="Accounts on desktop — profile header, sidebar nav and widened account grid" width="700" />
 </p>
 
 ## Features
@@ -35,6 +35,7 @@ Tablet and desktop get a sidebar nav, a wider layout, and a "Recent days" panel 
   remembered across visits (localStorage)
 - **Responsive** — mobile-first, with a dedicated tablet/desktop layout
   (sidebar nav, wider grids, a "Recent days" panel next to the calendar)
+- **Profile header on Accounts** — avatar (with upload), name, and email; edit name and photo in a bottom sheet
 - **Dark, warm "paper & clay" theme** with light mode support
 
 ## Tech stack

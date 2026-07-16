@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { Pencil } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { LogOut, Pencil } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { UserAvatar } from '@/components/shared/user-avatar'
 import { ProfileSheet } from '@/features/profile/components/profile-sheet'
+import { signOut } from '@/lib/better-auth/client'
 import type { ProfileUser } from '@/features/profile/types'
 
 interface ProfileHeaderProps {
@@ -11,37 +13,54 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
+  const router = useRouter()
   const [editOpen, setEditOpen] = useState(false)
+  // Optimistic local state: update immediately on save so the UI doesn't wait
+  // for the 60s better-auth cookie cache to expire before reflecting changes.
+  const [localName, setLocalName] = useState(user.name)
+  const [localImage, setLocalImage] = useState(user.image)
+
+  // Sync when the server prop eventually catches up (cookie cache expires → router.refresh resolves)
+  useEffect(() => { setLocalName(user.name) }, [user.name])
+  useEffect(() => { setLocalImage(user.image) }, [user.image])
 
   return (
     <>
       <div className="flex items-center gap-4 px-5 pt-8 pb-5">
-        {/* Avatar with pencil badge */}
         <button
           type="button"
           onClick={() => setEditOpen(true)}
-          className="shrink-0 active:opacity-80"
+          className="relative shrink-0 active:opacity-80"
         >
-          <UserAvatar name={user.name} image={user.image} size={64} />
+          <UserAvatar name={localName} image={localImage} size={64} />
+          <div className="absolute bottom-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-clay shadow-sm">
+            <Pencil size={10} className="text-white" strokeWidth={2.5} />
+          </div>
         </button>
 
-        {/* Name + email + edit */}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-base font-extrabold">{user.name}</p>
+          <p className="truncate text-base font-extrabold">{localName}</p>
           <p className="truncate text-xs text-muted-foreground">{user.email}</p>
         </div>
 
         <button
           type="button"
-          onClick={() => setEditOpen(true)}
-          className="flex shrink-0 items-center gap-1.5 rounded-xl border border-line bg-card px-3 py-2 text-xs font-semibold transition-colors hover:bg-hair active:scale-95"
+          onClick={() => signOut({ fetchOptions: { onSuccess: () => router.push('/login') } })}
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-red/30 bg-red/10 text-red transition-colors hover:bg-red/20 active:scale-95 md:hidden"
         >
-          <Pencil size={13} />
-          Edit
+          <LogOut size={14} />
         </button>
       </div>
 
-      <ProfileSheet user={user} open={editOpen} onClose={() => setEditOpen(false)} />
+      <ProfileSheet
+        user={{ ...user, name: localName, image: localImage }}
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        onUpdated={(name, image) => {
+          setLocalName(name)
+          if (image !== undefined) setLocalImage(image)
+        }}
+      />
     </>
   )
 }

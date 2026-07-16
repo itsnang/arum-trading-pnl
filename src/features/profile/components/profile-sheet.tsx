@@ -18,9 +18,10 @@ interface ProfileSheetProps {
   user: ProfileUser
   open: boolean
   onClose: () => void
+  onUpdated?: (name: string, image?: string) => void
 }
 
-export function ProfileSheet({ user, open, onClose }: ProfileSheetProps) {
+export function ProfileSheet({ user, open, onClose, onUpdated }: ProfileSheetProps) {
   const router = useRouter()
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
 
@@ -63,6 +64,7 @@ export function ProfileSheet({ user, open, onClose }: ProfileSheetProps) {
     }
 
     toast.success('Profile updated')
+    onUpdated?.(values.name, imageUrl)
     router.refresh()
     setAvatarFile(null)
     reset({ name: values.name })
