@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Archive, Plus } from 'lucide-react'
 import { ThemeToggle } from '@/components/shared/theme-toggle'
+import { TourTooltip } from '@/components/shared/tour-tooltip'
 import { useSelectedAccountStore } from '../store/accounts.store'
 import { useAccounts } from '../hooks/use-accounts'
 import { groupTotalsByType } from '../utils'
@@ -41,6 +42,7 @@ export function AccountsScreen() {
           </button>
           <button
             type="button"
+            data-tour="add-account"
             onClick={() => setAddOpen(true)}
             className="flex items-center gap-1 rounded-xl bg-clay px-3 py-2 text-xs font-semibold text-white transition-transform active:scale-[0.98]"
           >
@@ -50,8 +52,18 @@ export function AccountsScreen() {
         </div>
       </div>
 
-      {/* Per-type totals */}
-      <AccountTypeTotals totals={typeTotals} />
+      <TourTooltip
+        storageKey="pipfolio_accounts_tour"
+        steps={[
+          { target: 'profile-avatar', title: 'Edit your profile', body: 'Tap your avatar to change your name or photo.', tipPosition: 'below' },
+          { target: 'add-account', title: 'Add an account', body: 'Create personal, funded, or demo accounts to track separately.', tipPosition: 'below' },
+          { target: 'account-totals', title: 'Account totals', body: 'Balances are grouped by type — personal, funded, and demo are never mixed.', tipPosition: 'below' },
+        ]}
+      />
+
+      <div data-tour="account-totals">
+        <AccountTypeTotals totals={typeTotals} />
+      </div>
 
       {/* Account list */}
       <div className="flex flex-col gap-3 px-5 lg:grid lg:grid-cols-2 lg:gap-4 xl:grid-cols-3">
