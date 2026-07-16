@@ -4,7 +4,7 @@ import type { MonthJournalData } from '../types'
 
 interface MonthHeroProps {
   data: MonthJournalData
-  currentBalance?: string
+  currentBalance?: string | undefined
 }
 
 export function MonthHero({ data, currentBalance }: MonthHeroProps) {
