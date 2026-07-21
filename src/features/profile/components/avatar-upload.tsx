@@ -1,25 +1,24 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { Camera } from 'lucide-react'
 
 interface AvatarUploadProps {
   currentUrl: string | null
   name: string
-  onChange: (file: File) => void
+  onFilePicked: (file: File) => void
+  previewUrl?: string | null
   size?: number
 }
 
-export function AvatarUpload({ currentUrl, name, onChange, size = 80 }: AvatarUploadProps) {
+export function AvatarUpload({
+  currentUrl,
+  name,
+  onFilePicked,
+  previewUrl,
+  size = 80,
+}: AvatarUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const prevPreviewRef = useRef<string | null>(null)
-
-  useEffect(() => {
-    return () => {
-      if (prevPreviewRef.current) URL.revokeObjectURL(prevPreviewRef.current)
-    }
-  }, [])
 
   const displayUrl = previewUrl ?? currentUrl
   const initial = name.charAt(0).toUpperCase() || '?'
@@ -27,11 +26,9 @@ export function AvatarUpload({ currentUrl, name, onChange, size = 80 }: AvatarUp
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    if (prevPreviewRef.current) URL.revokeObjectURL(prevPreviewRef.current)
-    const url = URL.createObjectURL(file)
-    prevPreviewRef.current = url
-    setPreviewUrl(url)
-    onChange(file)
+    // Reset input so selecting the same file again triggers onChange
+    e.target.value = ''
+    onFilePicked(file)
   }
 
   return (
